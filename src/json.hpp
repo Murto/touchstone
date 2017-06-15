@@ -1,7 +1,7 @@
 #ifndef JSON_HPP
 #define JSON_HPP
 
-#include <array>
+#include <string>
 
 namespace json {
 	const std::string whitespace{0x20, 0x09, 0x0A, 0x0D};
