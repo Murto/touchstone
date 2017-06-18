@@ -51,8 +51,6 @@ std::string toString(const JSONBool& boo) {
 // Parse helper functions
 namespace {
 
-// TODO: Make parameter handling safer
-
 JSONObject parseJSONObject(std::string::const_iterator& start, const std::string::const_iterator end);
 JSONMember parseJSONMember(std::string::const_iterator& start, const std::string::const_iterator end);
 JSONArray parseJSONArray(std::string::const_iterator& start, const std::string::const_iterator end);
