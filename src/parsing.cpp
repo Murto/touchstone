@@ -1,11 +1,16 @@
 #include "json.hpp"
+#include "json-exception.hpp"
 #include "json-node.hpp"
-#include "touchstone.hpp"
+#include "parsing.hpp"
 
 #include <iterator>
 #include <sstream>
 
 namespace touchstone {
+
+namespace parsing {
+
+using namespace types;
 
 std::string toString(const JSONObject& obj) {
 	std::stringstream ss;
@@ -47,7 +52,6 @@ std::string toString(const JSONBool& boo) {
 namespace {
 
 // TODO: Make parameter handling safer
-// TODO: Test the use of rvalue references
 
 JSONObject parseJSONObject(std::string::const_iterator& start, const std::string::const_iterator end);
 JSONMember parseJSONMember(std::string::const_iterator& start, const std::string::const_iterator end);
@@ -228,6 +232,8 @@ JSONNode parseJSON(std::string::const_iterator& start, const std::string::const_
 		return JSONNode();
 	}
 	throw JSONException("Invalid string.");
+}
+
 }
 
 }

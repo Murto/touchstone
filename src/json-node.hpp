@@ -5,17 +5,14 @@
 #ifndef JSON_NODE_HPP
 #define JSON_NODE_HPP
 
-#include "json-exception.hpp"
-#include "json-type.hpp"
-#include "touchstone.hpp"
-#include "touchstone-types.hpp"
+#include "meta-type.hpp"
+#include "types.hpp"
 
 #include <type_traits>
 
 namespace touchstone {
 
-class JSONNode;
-
+namespace types {
 
 class JSONNode {
 public:
@@ -43,7 +40,7 @@ public:
 	void nullify();
 	std::string toString() const;
 private:
-	JSONType type;
+	MetaType type;
 	union V {
 		JSONObject* obj;
 		JSONArray* arr;
@@ -52,6 +49,8 @@ private:
 		JSONBool boo;
 	} value;
 };
+
+}
 
 }
 
