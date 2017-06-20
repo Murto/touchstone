@@ -41,7 +41,7 @@ public:
 	std::string toString() const;
 private:
 	MetaType type;
-	union V {
+	union Value {
 		JSONObject* obj;
 		JSONArray* arr;
 		JSONString* str;
