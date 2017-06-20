@@ -5,7 +5,7 @@
 
 namespace touchstone {
 
-namespace parsing {
+namespace parsing_streams {
 
 using namespace types;
 
