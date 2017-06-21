@@ -1,3 +1,4 @@
+#include "json.hpp"
 #include "json-exception.hpp"
 #include "json-node.hpp"
 #include "parsing-streams.hpp"
@@ -11,8 +12,6 @@ namespace touchstone {
 namespace parsing_streams {
 
 using namespace types;
-
-JSONNode parseJSON(std::istringstream& ss);
 
 JSONNode parseJSON_stream(const std::string& str) {
 	std::ios_base::sync_with_stdio(false);
@@ -126,16 +125,26 @@ JSONString parseJSONString(std::istringstream& ss) {
 	throw JSONException("Invalid string.");
 }
 
-JSONBool parseJSONBool(std::istringstream& ss) {
-	char c;
-	if (ss >> c) {
-		if (c == 't') {
-			char str[3];
+JSONNumber parseJSONNumber(std::istringstream& ss) {
+	JSONNumber num;
+	if (ss >> num)
+		return num;
+	throw JSONException("Invalid string.");
+}
 
-			if (ss.getline(str, 3) && std::string(str) == "rue") return true;
-		} else if (c == 'f') {
-			char str[4];
-			if (ss.getline(str, 4) && std::string(str) == "alse") return false;
+JSONBool parseJSONBool(std::istringstream& ss) {
+	char c{'\0'};
+	if (ss >> c && c == 't') {
+		char str[4];
+		str[3] = '\0';
+		if (ss.read(str, 3)) {
+			if (std::string(str) == "rue") return true;
+		}
+	} else if (c == 'f') {
+		char str[5];
+		str[4] = '\0';
+		if (ss.read(str, 4)) {
+			if (std::string(str) == "alse") return false;
 		}
 	}
 	throw JSONException("Invalid string.");
