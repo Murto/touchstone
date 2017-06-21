@@ -27,7 +27,7 @@ void parseJSONNull(std::istream& ss);
 
 JSONNode parseJSON(std::istream& ss) {
 	if (ss >> std::ws)
-		switch(ss.peek()) {
+		switch((char) ss.peek()) {
 			case '{':
 				return JSONNode(parseJSONObject(ss));
 			case '[':
@@ -53,32 +53,32 @@ JSONNode parseJSON(std::istream& ss) {
 				parseJSONNull(ss);
 				return JSONNode();
 		}
-	throw JSONException("Invalid string.");
+	throw JSONException("Invalid string.1");
 }
 
 JSONObject parseJSONObject(std::istream& ss) {
 	char c;
 	if (ss.get() == '{') {
-		if (!(ss >> std::ws)) throw JSONException("Invalid string.");
+		if (!(ss >> std::ws)) throw JSONException("Invalid string.2");
 		JSONObject obj;
 		if (ss.peek() == '}') return obj;
 		do {
 			obj.insert(parseJSONMember(ss));
-			if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.");
+			if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.3");
 			if (c == '}') break;
 			if (c != ',') throw JSONException("Unexpected token.");
 		} while (ss >> std::ws);
-		if (!ss.good()) throw JSONException("Invalid string.");
+		if (!ss.good()) throw JSONException("Invalid string.4");
 		return obj;
 	}
-	throw JSONException("Invalid string.");
+	throw JSONException("Invalid string.5");
 }
 
 JSONMember parseJSONMember(std::istream& ss) {
 	JSONString str = parseJSONString(ss);
 	char c;
-	if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.");
-	if (!(c == ':' && ss >> std::ws)) throw JSONException("Invalid string.");
+	if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.6");
+	if (!(c == ':' && ss >> std::ws)) throw JSONException("Invalid string.7");
 	JSONNode node = parseJSON(ss);
 	return JSONMember(str, node);
 }
@@ -86,19 +86,19 @@ JSONMember parseJSONMember(std::istream& ss) {
 JSONArray parseJSONArray(std::istream& ss) {
 	char c;
 	if (ss.get() == '[') {
-		if (!(ss >> std::ws)) throw JSONException("Invalid string.");
+		if (!(ss >> std::ws)) throw JSONException("Invalid string.8");
 		JSONArray arr;
 		if (ss.peek() == ']') return arr;
 		do {
 			arr.push_back(parseJSON(ss));
-			if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.");
+			if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.9");
 			if (c == ']') break;
 			if (c != ',') throw JSONException("Unexpected token.");
 		} while (ss >> std::ws);
-		if (!ss.good()) throw JSONException("Invalid string.");
+		if (!ss.good()) throw JSONException("Invalid string.10");
 		return arr;
 	}
-	throw JSONException("Invalid string.");
+	throw JSONException("Invalid string.11");
 }
 
 JSONString parseJSONString(std::istream& ss) {
@@ -111,17 +111,17 @@ JSONString parseJSONString(std::istream& ss) {
 			str << c;
 			if (c == '\\') escFlag = true;
 		}
-		if (!ss.good()) throw JSONException("Invalid string.");
+		if (!ss.good()) throw JSONException("Invalid string.12");
 		return str.str();
 	}
-	throw JSONException("Invalid string.");
+	throw JSONException("Invalid string.13");
 }
 
 JSONNumber parseJSONNumber(std::istream& ss) {
 	JSONNumber num;
 	if (ss >> num)
 		return num;
-	throw JSONException("Invalid string.");
+	throw JSONException("Invalid string.14");
 }
 
 JSONBool parseJSONBool(std::istream& ss) {
@@ -139,7 +139,7 @@ JSONBool parseJSONBool(std::istream& ss) {
 			if (std::string(str) == "alse") return false;
 		}
 	}
-	throw JSONException("Invalid string.");
+	throw JSONException("Invalid string.16");
 }
 
 void parseJSONNull(std::istream& ss) {
@@ -148,7 +148,7 @@ void parseJSONNull(std::istream& ss) {
 		char str[3];
 		if (ss.getline(str, 3) && std::string(str) == "ull") return;
 	}
-	throw JSONException("Invalid string.");
+	throw JSONException("Invalid string.17");
 }
 
 }
