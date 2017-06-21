@@ -159,15 +159,15 @@ void JSONNode::nullify() {
 std::string JSONNode::toString() const {
 	switch(type) {
 		case MetaType::OBJECT:
-			return parsing::toString(*value.obj);
+			return toString(*value.obj);
 		case MetaType::ARRAY:
-			return parsing::toString(*value.arr);
+			return toString(*value.arr);
 		case MetaType::STRING:
-			return parsing::toString(*value.str);
+			return toString(*value.str);
 		case MetaType::NUMBER:
-			return parsing::toString(value.num);
+			return toString(value.num);
 		case MetaType::BOOL:
-			return parsing::toString(value.boo);
+			return toString(value.boo);
 	}
 	return "null";
 }
