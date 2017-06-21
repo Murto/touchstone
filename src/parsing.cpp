@@ -12,41 +12,6 @@ namespace parsing {
 
 using namespace types;
 
-std::string toString(const JSONObject& obj) {
-	std::stringstream ss;
-	ss << '{';
-	auto it = obj.cbegin();
-	while (it != obj.cend()) {
-		ss << '\"' << it->first << '\"' << ':' << it->second.toString();
-		if (++it != obj.cend()) ss << ',';
-	}
-	ss << '}';
-	return ss.str();
-}
-
-std::string toString(const JSONArray& arr) {
-	std::stringstream ss;
-	ss << '[';
-	auto it = arr.cbegin();
-	while (it != arr.cend()) {
-		ss << it->toString();
-		if (++it != arr.cend()) ss << ',';
-	}
-	ss << ']';
-	return ss.str();
-}
-
-std::string toString(const JSONString& str) {
-	return "\"" + str + "\"";
-}
-
-std::string toString(const JSONNumber& num) {
-	return std::to_string(num);
-}
-
-std::string toString(const JSONBool& boo) {
-	return boo ? "true" : "false";
-}
 
 // Parse helper functions
 namespace {
@@ -168,11 +133,8 @@ JSONNumber parseJSONNumber(std::string::const_iterator& start, const std::string
 	if (*start != '-' && json::digits.find(*start) == std::string::npos) throw JSONException("Unexpected token.");
 	auto it = start;
 	JSONNumber num;
-	bool nFlag{false};
-	if (*start == '-') {
+	if (*start == '-')
 		if (++start == end) throw JSONException("Unexpected end of string.");
-		nFlag = true;
-	}
 	if (*start == '0') ++start;
 	else while (++start != end && json::digits.find(*start) != std::string::npos);
 	if (*start == '.') {

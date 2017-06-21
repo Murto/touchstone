@@ -8,6 +8,14 @@ namespace touchstone {
 
 namespace types {
 
+using namespace parsing;
+
+std::string toString(const JSONObject& obj);
+std::string toString(const JSONArray& arr);
+std::string toString(const JSONString& str);
+std::string toString(const JSONNumber& num);
+std::string toString(const JSONBool& boo);
+
 JSONNode::JSONNode() : type{MetaType::NONE} {}
 
 JSONNode::JSONNode(const JSONNode& node) {
@@ -151,19 +159,55 @@ void JSONNode::nullify() {
 std::string JSONNode::toString() const {
 	switch(type) {
 		case MetaType::OBJECT:
-			return toString(*value.obj);
+			return parsing::toString(*value.obj);
 		case MetaType::ARRAY:
-			return toString(*value.arr);
+			return parsing::toString(*value.arr);
 		case MetaType::STRING:
-			return toString(*value.str);
+			return parsing::toString(*value.str);
 		case MetaType::NUMBER:
-			return toString(value.num);
+			return parsing::toString(value.num);
 		case MetaType::BOOL:
-			return toString(value.boo);
+			return parsing::toString(value.boo);
 	}
 	return "null";
 }
 
+}
+
+std::string toString(const JSONObject& obj) {
+	std::stringstream ss;
+	ss << '{';
+	auto it = obj.cbegin();
+	while (it != obj.cend()) {
+		ss << '\"' << it->first << '\"' << ':' << it->second.toString();
+		if (++it != obj.cend()) ss << ',';
+	}
+	ss << '}';
+	return ss.str();
+}
+
+std::string toString(const JSONArray& arr) {
+	std::stringstream ss;
+	ss << '[';
+	auto it = arr.cbegin();
+	while (it != arr.cend()) {
+		ss << it->toString();
+		if (++it != arr.cend()) ss << ',';
+	}
+	ss << ']';
+	return ss.str();
+}
+
+std::string toString(const JSONString& str) {
+	return "\"" + str + "\"";
+}
+
+std::string toString(const JSONNumber& num) {
+	return std::to_string(num);
+}
+
+std::string toString(const JSONBool& boo) {
+	return boo ? "true" : "false";
 }
 
 }
