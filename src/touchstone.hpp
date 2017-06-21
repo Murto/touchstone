@@ -5,5 +5,6 @@
 #include "json-exception.hpp"
 #include "json-node.hpp"
 #include "parsing.hpp"
+#include "parsing-streams.hpp"
 
 #endif
