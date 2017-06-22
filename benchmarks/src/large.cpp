@@ -6,7 +6,7 @@
 
 int main() {
 	using namespace touchstone::parsing;
-	std::ifstream fs("test/json/large.json");
+	std::ifstream fs("benchmarks/json/large.json");
 	auto start = std::chrono::steady_clock::now();
 	parseJSON(fs);
 	auto end = std::chrono::steady_clock::now();

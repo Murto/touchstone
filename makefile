@@ -1,5 +1,7 @@
 CC = g++
 CFLAGS = -std=c++17 -O2 -I src
+TOUCHSTONE = src
+BENCHMARKS = benchmarks/src
 
 no-target:
 	@echo -e "Target unspecified:\n\
@@ -9,7 +11,7 @@ no-target:
 large:
 	@echo "Compiling large json benchmark..."
 	@if command -v  $(CC) &> /dev/null; then\
-		if $(CC) $(CFLAGS) test/src/large.cpp src/*.cpp -o large.out &> /dev/null; then\
+		if $(CC) $(CFLAGS) $(BENCHMARKS)/large.cpp $(TOUCHSTONE)/*.cpp -o large.out &> /dev/null; then\
 			echo "Compile was successful.";\
 		else\
 			echo "Compile was unsuccessful.";\
