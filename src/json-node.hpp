@@ -8,8 +8,6 @@
 #include "meta-type.hpp"
 #include "types.hpp"
 
-#include <type_traits>
-
 namespace touchstone {
 
 namespace types {
