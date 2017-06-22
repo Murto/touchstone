@@ -15,7 +15,8 @@ int main() {
 	std::cout << "--Milliseconds elapsed: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << '\n';
 	std::cout << "--Microseconds elapsed: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << '\n';
 	std::cout << "--Nanoseconds elapsed:  " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << '\n';
-	std::cout.flush();
+	std::cout << "\nPress enter to quit." << std::endl;
+	std::cin.get();
 }
 
 
