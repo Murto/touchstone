@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++17 -O2 -I src
+CFLAGS = -std=c++11 -O2 -I src
 TOUCHSTONE = src
 BENCHMARKS = benchmarks/src
 
