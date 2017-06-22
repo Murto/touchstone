@@ -59,16 +59,9 @@ JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL} {
 }
 
 JSONNode::~JSONNode() {
-	switch(type) {
-		case MetaType::OBJECT:
-			delete value.obj;
-			break;
-		case MetaType::ARRAY:
-			delete value.arr;
-			break;
-		case MetaType::STRING:
-			delete value.str;
-	}
+	if (type == MetaType::STRING) delete value.str;
+	else if (type == MetaType::OBJECT) delete value.obj;
+	else if (type == MetaType::ARRAY) delete value.arr;
 }
 
 JSONNode& JSONNode::operator=(const JSONNode& node) {
