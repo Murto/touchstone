@@ -18,8 +18,7 @@ std::string toString(const JSONBool& boo);
 
 JSONNode::JSONNode() : type{MetaType::NONE} {}
 
-JSONNode::JSONNode(const JSONNode& node) {
-	type = node.type;
+JSONNode::JSONNode(const JSONNode& node) : type{node.type} {
 	switch(type) {
 		case MetaType::OBJECT:
 			value.obj = new JSONObject(*node.value.obj);
@@ -38,25 +37,15 @@ JSONNode::JSONNode(const JSONNode& node) {
 	}
 }
 
-JSONNode::JSONNode(const JSONObject& obj) : type{MetaType::OBJECT} {
-	value.obj = new JSONObject(obj);
-}
+JSONNode::JSONNode(const JSONObject& obj) : type{MetaType::OBJECT}, value{.obj = new JSONObject(obj)} {}
 
-JSONNode::JSONNode(const JSONArray& arr) : type{MetaType::ARRAY} {
-	value.arr = new JSONArray(arr);
-}
+JSONNode::JSONNode(const JSONArray& arr) : type{MetaType::ARRAY}, value{.arr = new JSONArray(arr)} {}
 
-JSONNode::JSONNode(const JSONString& str) : type{MetaType::STRING} {
-	value.str = new JSONString(str);
-}
+JSONNode::JSONNode(const JSONString& str) : type{MetaType::STRING}, value{.str = new JSONString(str)} {}
 
-JSONNode::JSONNode(const JSONNumber& num) : type{MetaType::NUMBER} {
-	value.num = num;
-}
+JSONNode::JSONNode(const JSONNumber& num) : type{MetaType::NUMBER}, value{.num = num} {}
 
-JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL} {
-	value.boo = boo;
-}
+JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL} value{.boo = boo} {}
 
 JSONNode::~JSONNode() {
 	if (type == MetaType::STRING) delete value.str;
