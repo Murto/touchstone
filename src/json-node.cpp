@@ -45,7 +45,7 @@ JSONNode::JSONNode(const JSONString& str) : type{MetaType::STRING}, value{.str =
 
 JSONNode::JSONNode(const JSONNumber& num) : type{MetaType::NUMBER}, value{.num = num} {}
 
-JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL} value{.boo = boo} {}
+JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL}, value{.boo = boo} {}
 
 JSONNode::~JSONNode() {
 	if (type == MetaType::STRING) delete value.str;
@@ -107,31 +107,6 @@ JSONNode& JSONNode::getNode(const JSONObject::key_type& key) {
 JSONNode& JSONNode::getNode(const JSONArray::size_type& pos) {
 	if (type == MetaType::ARRAY) return value.arr->at(pos);
 	throw JSONException("Invalid operation.");
-}
-
-void JSONNode::setValue(const JSONObject& obj) {
-	type = MetaType::OBJECT;
-	value.obj = new JSONObject(obj);
-}
-
-void JSONNode::setValue(const JSONArray& arr) {
-	type = MetaType::ARRAY;
-	value.arr = new JSONArray(arr);
-}
-
-void JSONNode::setValue(const JSONString& str) {
-	type = MetaType::STRING;
-	value.str = new JSONString(str);
-}
-
-void JSONNode::setValue(const JSONNumber& num) {
-	type = MetaType::NUMBER;
-	value.num = num;
-}
-
-void JSONNode::setValue(const JSONBool& boo) {
-	type = MetaType::BOOL;
-	value.boo = boo;
 }
 
 void JSONNode::nullify() {

@@ -30,11 +30,6 @@ public:
 	JSONBool& getBool();
 	JSONNode& getNode(const JSONObject::key_type& key);
 	JSONNode& getNode(const JSONArray::size_type& pos);
-	void setValue(const JSONObject& obj);
-	void setValue(const JSONArray& arr);
-	void setValue(const JSONString& str);
-	void setValue(const JSONNumber& num);
-	void setValue(const JSONBool& boo);
 	void nullify();
 	std::string toString() const;
 private:
