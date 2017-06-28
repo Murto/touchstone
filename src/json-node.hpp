@@ -23,7 +23,6 @@ public:
 	JSONNode(const JSONString& str);
 	JSONNode(const JSONNumber& num);
 	JSONNode(const JSONBool& boo);
-	~JSONNode();
 	JSONNode& operator=(const JSONNode& node);
 	JSONNode& operator=(const JSONObject& obj);
 	JSONNode& operator=(const JSONArray& arr);
@@ -47,15 +46,21 @@ public:
 	std::string toString() const;
 	friend std::ostream& operator<<(std::ostream& os, const JSONNode& node);
 private:
-	void freeMemory();
-
 	MetaType type;
 	union Value {
-		JSONObject* obj;
-		JSONArray* arr;
-		JSONString* str;
+		Value();
+		Value(const JSONObject& obj);
+		Value(const JSONArray& arr);
+		Value(const JSONString& str);
+		Value(const JSONNumber& num);
+		Value(const JSONBool& boo);
+		~Value();
+		JSONObject obj;
+		JSONArray arr;
+		JSONString str;
 		JSONNumber num;
 		JSONBool boo;
+		
 	} value;
 };
 

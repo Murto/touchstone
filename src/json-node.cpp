@@ -2,6 +2,7 @@
 #include "json-node.hpp"
 #include "parsing.hpp"
 
+#include <cstring>
 #include <sstream>
 
 namespace touchstone {
@@ -21,13 +22,13 @@ JSONNode::JSONNode() : type{MetaType::NONE} {}
 JSONNode::JSONNode(const JSONNode& node) : type{node.type} {
 	switch(type) {
 		case MetaType::OBJECT:
-			value.obj = new JSONObject(*node.value.obj);
+			value.obj = node.value.obj;
 			break;
 		case MetaType::ARRAY:
-			value.arr = new JSONArray(*node.value.arr);
+			value.arr = node.value.arr;
 			break;
 		case MetaType::STRING:
-			value.str = new JSONString(*node.value.str);
+			value.str = node.value.str;
 			break;
 		case MetaType::NUMBER:
 			value.num = node.value.num;
@@ -37,31 +38,27 @@ JSONNode::JSONNode(const JSONNode& node) : type{node.type} {
 	}
 }
 
-JSONNode::JSONNode(const JSONObject& obj) : type{MetaType::OBJECT}, value{.obj = new JSONObject(obj)} {}
+JSONNode::JSONNode(const JSONObject& obj) : type{MetaType::OBJECT}, value{obj} {}
 
-JSONNode::JSONNode(const JSONArray& arr) : type{MetaType::ARRAY}, value{.arr = new JSONArray(arr)} {}
+JSONNode::JSONNode(const JSONArray& arr) : type{MetaType::ARRAY}, value{arr} {}
 
-JSONNode::JSONNode(const JSONString& str) : type{MetaType::STRING}, value{.str = new JSONString(str)} {}
+JSONNode::JSONNode(const JSONString& str) : type{MetaType::STRING}, value{str} {}
 
-JSONNode::JSONNode(const JSONNumber& num) : type{MetaType::NUMBER}, value{.num = num} {}
+JSONNode::JSONNode(const JSONNumber& num) : type{MetaType::NUMBER}, value{num} {}
 
-JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL}, value{.boo = boo} {}
-
-JSONNode::~JSONNode() {
-	freeMemory();
-}
+JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL}, value{boo} {}
 
 JSONNode& JSONNode::operator=(const JSONNode& node) {
 	type = node.type;
 	switch(type) {
 		case MetaType::OBJECT:
-			value.obj = new JSONObject(*node.value.obj);
+			value.obj = node.value.obj;
 			break;
 		case MetaType::ARRAY:
-			value.arr = new JSONArray(*node.value.arr);
+			value.arr = node.value.arr;
 			break;
 		case MetaType::STRING:
-			value.str = new JSONString(*node.value.str);
+			value.str = node.value.str;
 			break;
 		case MetaType::NUMBER:
 			value.num = node.value.num;
@@ -73,35 +70,60 @@ JSONNode& JSONNode::operator=(const JSONNode& node) {
 }
 
 JSONNode& JSONNode::operator=(const JSONObject& obj) {
-	freeMemory();
+	if (type == MetaType::OBJECT) {
+		value.obj = obj;
+		return *this;
+	} else if (type == MetaType::ARRAY) {
+		value.arr.~JSONArray();
+	} else if(type == MetaType::STRING) {
+		value.str.~JSONString();
+	}
 	type = MetaType::OBJECT;
-	value.obj = new JSONObject(obj);
+	new (&value.obj) JSONObject(obj);
 	return *this;
 }
 
 JSONNode& JSONNode::operator=(const JSONArray& arr) {
-	freeMemory();
+	if (type == MetaType::ARRAY) {
+		value.arr = arr;
+		return *this;
+	} else if (type == MetaType::OBJECT) {
+		value.obj.~JSONObject();
+	} else if (type == MetaType::STRING) {
+		value.str.~JSONString();
+	}
 	type = MetaType::ARRAY;
-	value.arr = new JSONArray(arr);
+	new (&value.arr) JSONArray(arr);
 	return *this;
 }
 
 JSONNode& JSONNode::operator=(const JSONString& str) {
-	freeMemory();
+	if (type == MetaType::STRING) {
+		value.str = str;
+		return *this;
+	} else if (type == MetaType::OBJECT) {
+		value.obj.~JSONObject();
+	} else if (type == MetaType::ARRAY) {
+		value.arr.~JSONArray();
+	}
 	type = MetaType::STRING;
-	value.str = new JSONString(str);
+	new (&value.str) JSONString(str);
 	return *this;
 }
 
 JSONNode& JSONNode::operator=(const JSONNumber& num) {
-	freeMemory();
+	if (type == MetaType::OBJECT) value.obj.~JSONObject();
+	else if (type == MetaType::ARRAY) value.arr.~JSONArray();
+	else if (type == MetaType::STRING) value.str.~JSONString();
 	type = MetaType::NUMBER;
 	value.num = num;
 	return *this;
 }
 
 JSONNode& JSONNode::operator=(const JSONBool& boo) {
-	freeMemory();
+	if (type == MetaType::OBJECT) value.obj.~JSONObject();
+	else if (type == MetaType::ARRAY) value.arr.~JSONArray();
+	else if (type == MetaType::STRING) value.str.~JSONString();
 	type = MetaType::BOOL;
 	value.boo = boo;
 	return *this;
@@ -111,30 +133,31 @@ std::ostream& operator<<(std::ostream& os, const JSONNode& node) {
 	switch(node.type) {
 		case MetaType::OBJECT: {
 			os << '{';
-			auto it = node.value.obj->cbegin();
-			while (it != node.value.obj->cend()) {
+			auto it = node.value.obj.cbegin();
+			while (it != node.value.obj.cend()) {
 				os << '\"' << it->first << "\":" << it->second;
-				if (++it != node.value.obj->cend()) os << ',';
+				if (++it != node.value.obj.cend()) os << ',';
 			}
 			return os << '}';
 		}
 		case MetaType::ARRAY: {
-			auto it = node.value.arr->cbegin();
+			auto it = node.value.arr.cbegin();
 			os << '[';
-			while (it != node.value.arr->cend()) {
+			while (it != node.value.arr.cend()) {
 				os << *it;
-				if (++it != node.value.arr->cend()) os << ',';
+				if (++it != node.value.arr.cend()) os << ',';
 			}
 			return os << ']';
 		}
 		case MetaType::STRING:
-			return os << '\"' << *node.value.str << '\"';
+			return os << '\"' << node.value.str << '\"';
 		case MetaType::NUMBER:
 			return os << node.value.num;
 		case MetaType::BOOL:
 			return os << (node.value.boo ? "true" : "false");
+		case MetaType::NONE:
+			return os << "null";
 	}
-	return os << "null";
 }
 
 bool JSONNode::isObject() {
@@ -162,17 +185,17 @@ bool JSONNode::isNull() {
 }
 
 JSONObject& JSONNode::getObject() {
-	if (type == MetaType::OBJECT) return *value.obj;
+	if (type == MetaType::OBJECT) return value.obj;
 	throw JSONException("Invalid type.");
 }
 
 JSONArray& JSONNode::getArray() {
-	if (type == MetaType::ARRAY) return *value.arr;
+	if (type == MetaType::ARRAY) return value.arr;
 	throw JSONException("Invalid type.");
 }
 
 JSONString& JSONNode::getString() {
-	if (type == MetaType::STRING) return *value.str;
+	if (type == MetaType::STRING) return value.str;
 	throw JSONException("Invalid type.");
 }
 
@@ -187,12 +210,12 @@ JSONBool& JSONNode::getBool() {
 }
 
 JSONNode& JSONNode::getNode(const JSONObject::key_type& key) {
-	if (type == MetaType::OBJECT) return value.obj->at(key);
+	if (type == MetaType::OBJECT) return value.obj.at(key);
 	throw JSONException("Invalid operation.");
 }
 
 JSONNode& JSONNode::getNode(const JSONArray::size_type& pos) {
-	if (type == MetaType::ARRAY) return value.arr->at(pos);
+	if (type == MetaType::ARRAY) return value.arr.at(pos);
 	throw JSONException("Invalid operation.");
 }
 
@@ -203,11 +226,11 @@ void JSONNode::nullify() {
 std::string JSONNode::toString() const {
 	switch(type) {
 		case MetaType::OBJECT:
-			return types::toString(*value.obj);
+			return types::toString(value.obj);
 		case MetaType::ARRAY:
-			return types::toString(*value.arr);
+			return types::toString(value.arr);
 		case MetaType::STRING:
-			return types::toString(*value.str);
+			return types::toString(value.str);
 		case MetaType::NUMBER:
 			return types::toString(value.num);
 		case MetaType::BOOL:
@@ -252,11 +275,32 @@ std::string toString(const JSONBool& boo) {
 	return boo ? "true" : "false";
 }
 
-void JSONNode::freeMemory() {
-	if (type == MetaType::STRING) delete value.str;
-	else if (type == MetaType::OBJECT) delete value.obj;
-	else if (type == MetaType::ARRAY) delete value.arr;
+JSONNode::Value::Value() {
+	std::memset(this, 0, sizeof(*this));
 }
+
+
+JSONNode::Value::Value(const JSONObject& obj) {
+	new(&this->obj) JSONObject(obj);
+}
+
+JSONNode::Value::Value(const JSONArray& arr) {
+	new(&this->arr) JSONArray(arr);
+}
+
+JSONNode::Value::Value(const JSONString& str) {
+	new(&this->str) JSONString(str);
+}
+
+JSONNode::Value::Value(const JSONNumber& num) {
+	new(&this->num) JSONNumber(num);
+}
+
+JSONNode::Value::Value(const JSONBool& boo) {
+	new (&this->boo) JSONBool(boo);
+}
+
+JSONNode::Value::~Value() {}
 
 }
 
