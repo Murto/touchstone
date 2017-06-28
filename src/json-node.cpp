@@ -74,8 +74,34 @@ JSONNode& JSONNode::operator=(const JSONNode& node) {
 	return *this;
 }
 
-std::ostream& operator<<(std::ostream& os, JSONNode& node) {
-	return os << node.toString();
+std::ostream& operator<<(std::ostream& os, const JSONNode& node) {
+	switch(node.type) {
+		case MetaType::OBJECT: {
+			os << '{';
+			auto it = node.value.obj->cbegin();
+			while (it != node.value.obj->cend()) {
+				os << '\"' << it->first << "\":" << it->second;
+				if (++it != node.value.obj->cend()) os << ',';
+			}
+			return os << '}';
+		}
+		case MetaType::ARRAY: {
+			auto it = node.value.arr->cbegin();
+			os << '[';
+			while (it != node.value.arr->cend()) {
+				os << *it;
+				if (++it != node.value.arr->cend()) os << ',';
+			}
+			return os << ']';
+		}
+		case MetaType::STRING:
+			return os << '\"' << *node.value.str << '\"';
+		case MetaType::NUMBER:
+			return os << node.value.num;
+		case MetaType::BOOL:
+			return os << (node.value.boo ? "true" : "false");
+	}
+	return os << "null";
 }
 
 bool JSONNode::isObject() {

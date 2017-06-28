@@ -40,7 +40,7 @@ public:
 	JSONNode& getNode(const JSONArray::size_type& pos);
 	void nullify();
 	std::string toString() const;
-	friend std::ostream& operator<<(std::ostream& os, JSONNode& node);
+	friend std::ostream& operator<<(std::ostream& os, const JSONNode& node);
 private:
 	MetaType type;
 	union Value {
