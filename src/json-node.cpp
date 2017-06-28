@@ -48,9 +48,7 @@ JSONNode::JSONNode(const JSONNumber& num) : type{MetaType::NUMBER}, value{.num =
 JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL}, value{.boo = boo} {}
 
 JSONNode::~JSONNode() {
-	if (type == MetaType::STRING) delete value.str;
-	else if (type == MetaType::OBJECT) delete value.obj;
-	else if (type == MetaType::ARRAY) delete value.arr;
+	freeMemory();
 }
 
 JSONNode& JSONNode::operator=(const JSONNode& node) {
@@ -71,6 +69,41 @@ JSONNode& JSONNode::operator=(const JSONNode& node) {
 		case MetaType::BOOL:
 			value.boo = node.value.boo;
 	}
+	return *this;
+}
+
+JSONNode& JSONNode::operator=(const JSONObject& obj) {
+	freeMemory();
+	type = MetaType::OBJECT;
+	value.obj = new JSONObject(obj);
+	return *this;
+}
+
+JSONNode& JSONNode::operator=(const JSONArray& arr) {
+	freeMemory();
+	type = MetaType::ARRAY;
+	value.arr = new JSONArray(arr);
+	return *this;
+}
+
+JSONNode& JSONNode::operator=(const JSONString& str) {
+	freeMemory();
+	type = MetaType::STRING;
+	value.str = new JSONString(str);
+	return *this;
+}
+
+JSONNode& JSONNode::operator=(const JSONNumber& num) {
+	freeMemory();
+	type = MetaType::NUMBER;
+	value.num = num;
+	return *this;
+}
+
+JSONNode& JSONNode::operator=(const JSONBool& boo) {
+	freeMemory();
+	type = MetaType::BOOL;
+	value.boo = boo;
 	return *this;
 }
 
@@ -217,6 +250,12 @@ std::string toString(const JSONNumber& num) {
 
 std::string toString(const JSONBool& boo) {
 	return boo ? "true" : "false";
+}
+
+void JSONNode::freeMemory() {
+	if (type == MetaType::STRING) delete value.str;
+	else if (type == MetaType::OBJECT) delete value.obj;
+	else if (type == MetaType::ARRAY) delete value.arr;
 }
 
 }
