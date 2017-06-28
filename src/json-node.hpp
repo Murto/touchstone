@@ -25,7 +25,6 @@ public:
 	JSONNode(const JSONBool& boo);
 	~JSONNode();
 	JSONNode& operator=(const JSONNode& node);
-	std::ostream& operator<<(std::ostream& os);
 	bool isObject();
 	bool isArray();
 	bool isString();
@@ -41,6 +40,7 @@ public:
 	JSONNode& getNode(const JSONArray::size_type& pos);
 	void nullify();
 	std::string toString() const;
+	friend std::ostream& operator<<(std::ostream& os, JSONNode& node);
 private:
 	MetaType type;
 	union Value {

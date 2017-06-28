@@ -74,8 +74,8 @@ JSONNode& JSONNode::operator=(const JSONNode& node) {
 	return *this;
 }
 
-std::ostream& JSONNode::operator<<(std::ostream& os) {
-	os << this->toString();	
+std::ostream& operator<<(std::ostream& os, JSONNode& node) {
+	return os << node.toString();
 }
 
 bool JSONNode::isObject() {
