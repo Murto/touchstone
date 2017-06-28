@@ -11,7 +11,7 @@ no-target:
 large:
 	@echo "Compiling large json benchmark..."
 	@if command -v  $(CC) &> /dev/null; then\
-		if $(CC) $(CFLAGS) $(BENCHMARKS)/large.cpp $(TOUCHSTONE)/*.cpp -o large.out &> /dev/null; then\
+		if $(CC) $(CFLAGS) $(BENCHMARKS)/large.cpp $(TOUCHSTONE)/*.cpp -o bin/large.out &> /dev/null; then\
 			echo "Compile was successful.";\
 		else\
 			echo "Compile was unsuccessful.";\
@@ -22,7 +22,7 @@ large:
 
 clean:
 	@echo "Removing generated files..."
-	@if [ -e large.out ] && rm large.out;\
+	@if [ -e bin/* ] && rm bin/*;\
 	then echo "Generated file(s) removed.";\
 	else echo "No generated files to remove.";\
 	fi
