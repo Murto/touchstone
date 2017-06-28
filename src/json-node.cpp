@@ -224,55 +224,7 @@ void JSONNode::nullify() {
 }
 
 std::string JSONNode::toString() const {
-	switch(type) {
-		case MetaType::OBJECT:
-			return types::toString(value.obj);
-		case MetaType::ARRAY:
-			return types::toString(value.arr);
-		case MetaType::STRING:
-			return types::toString(value.str);
-		case MetaType::NUMBER:
-			return types::toString(value.num);
-		case MetaType::BOOL:
-			return types::toString(value.boo);
-	}
-	return "null";
-}
-
-std::string toString(const JSONObject& obj) {
-	std::stringstream ss;
-	ss << '{';
-	auto it = obj.cbegin();
-	while (it != obj.cend()) {
-		ss << '\"' << it->first << '\"' << ':' << it->second.toString();
-		if (++it != obj.cend()) ss << ',';
-	}
-	ss << '}';
-	return ss.str();
-}
-
-std::string toString(const JSONArray& arr) {
-	std::stringstream ss;
-	ss << '[';
-	auto it = arr.cbegin();
-	while (it != arr.cend()) {
-		ss << it->toString();
-		if (++it != arr.cend()) ss << ',';
-	}
-	ss << ']';
-	return ss.str();
-}
-
-std::string toString(const JSONString& str) {
-	return "\"" + str + "\"";
-}
-
-std::string toString(const JSONNumber& num) {
-	return std::to_string(num);
-}
-
-std::string toString(const JSONBool& boo) {
-	return boo ? "true" : "false";
+	return static_cast<std::stringstream&>(std::stringstream() << *this).str();
 }
 
 JSONNode::Value::Value() {
