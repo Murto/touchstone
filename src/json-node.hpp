@@ -8,6 +8,8 @@
 #include "meta-type.hpp"
 #include "types.hpp"
 
+#include <ostream>
+
 namespace touchstone {
 
 namespace types {
@@ -23,6 +25,13 @@ public:
 	JSONNode(const JSONBool& boo);
 	~JSONNode();
 	JSONNode& operator=(const JSONNode& node);
+	std::ostream& operator<<(std::ostream& os);
+	bool isObject();
+	bool isArray();
+	bool isString();
+	bool isNumber();
+	bool isBool();
+	bool isNull();
 	JSONObject& getObject();
 	JSONArray& getArray();
 	JSONString& getString();

@@ -16,7 +16,7 @@ int main() {
 	printTimeElapsed(start, end);
 	std::ofstream ofs("/dev/null");
 	start = std::chrono::steady_clock::now();
-	ofs << node.toString();
+	ofs << node;
 	end = std::chrono::steady_clock::now();
 	std::cout << "\nTime elapsed for file write:\n";
 	printTimeElapsed(start, end);

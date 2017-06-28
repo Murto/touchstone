@@ -74,6 +74,34 @@ JSONNode& JSONNode::operator=(const JSONNode& node) {
 	return *this;
 }
 
+std::ostream& JSONNode::operator<<(std::ostream& os) {
+	os << this->toString();	
+}
+
+bool JSONNode::isObject() {
+	return type == MetaType::OBJECT;
+}
+
+bool JSONNode::isArray() {
+	return type == MetaType::ARRAY;
+}
+
+bool JSONNode::isString() {
+	return type == MetaType::STRING;
+}
+
+bool JSONNode::isNumber() {
+	return type == MetaType::NUMBER;
+}
+
+bool JSONNode::isBool() {
+	return type == MetaType::BOOL;
+}
+
+bool JSONNode::isNull() {
+	return type == MetaType::NONE;
+}
+
 JSONObject& JSONNode::getObject() {
 	if (type == MetaType::OBJECT) return *value.obj;
 	throw JSONException("Invalid type.");
