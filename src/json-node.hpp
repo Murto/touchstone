@@ -23,6 +23,7 @@ public:
 	JSONNode(const JSONString& str);
 	JSONNode(const JSONNumber& num);
 	JSONNode(const JSONBool& boo);
+	~JSONNode();
 	JSONNode& operator=(const JSONNode& node);
 	JSONNode& operator=(const JSONObject& obj);
 	JSONNode& operator=(const JSONArray& arr);

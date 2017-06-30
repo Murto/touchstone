@@ -48,6 +48,12 @@ JSONNode::JSONNode(const JSONNumber& num) : type{MetaType::NUMBER}, value{num} {
 
 JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL}, value{boo} {}
 
+JSONNode::~JSONNode() {
+	if (type == MetaType::OBJECT) value.obj.~JSONObject();
+	else if (type == MetaType::ARRAY) value.arr.~JSONArray();
+	else if (type == MetaType::STRING) value.str.~JSONString();
+}
+
 JSONNode& JSONNode::operator=(const JSONNode& node) {
 	type = node.type;
 	switch(type) {
