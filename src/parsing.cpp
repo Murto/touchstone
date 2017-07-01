@@ -3,6 +3,7 @@
 #include "json-node.hpp"
 #include "parsing.hpp"
 
+#include <cstring>
 #include <istream>
 #include <sstream>
 
@@ -22,128 +23,126 @@ JSONBool parseJSONBool(std::istream& is);
 void parseJSONNull(std::istream& is);
 
 JSONNode parseJSON(std::istream& is) {
-	if (is >> std::ws)
-		switch(is.peek()) {
-			case '{':
-				return JSONNode(parseJSONObject(is));
-			case '[':
-				return JSONNode(parseJSONArray(is));
-			case '\"':
-				return JSONNode(parseJSONString(is));
-			case '-':
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-				return JSONNode(parseJSONNumber(is));
-			case 't':
-			case 'f':
-				return JSONNode(parseJSONBool(is));
-			case 'n':
-				parseJSONNull(is);
-				return JSONNode();
-		}
-	throw JSONException("Invalid string.");
+	switch(is.peek()) {
+		case '{':
+			return JSONNode(parseJSONObject(is));
+		case '[':
+			return JSONNode(parseJSONArray(is));
+		case '\"':
+			return JSONNode(parseJSONString(is));
+		case '-':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			return JSONNode(parseJSONNumber(is));
+		case 't':
+		case 'f':
+			return JSONNode(parseJSONBool(is));
+		case 'n':
+			parseJSONNull(is);
+			return JSONNode();
+	}
+	throw JSONException(std::string("Unexpected character: \'") + std::string{(char) is.peek(), '\''});
 }
 
 JSONObject parseJSONObject(std::istream& is) {
-	char c;
-	if (is.get() == '{') {
-		if (!(is >> std::ws)) throw JSONException("Invalid string.");
-		JSONObject obj;
-		if (is.peek() == '}') return obj;
-		do {
-			obj.insert(parseJSONMember(is));
-			if (!(is >> std::ws && is >> c)) throw JSONException("Invalid string.");
-			if (c == '}') break;
-			if (c != ',') throw JSONException("Unexpected token.");
-		} while (is >> std::ws);
-		if (!is.good()) throw JSONException("Invalid string.");
+	if (is.peek() != '{') throw JSONException(std::string("Expected \'{\', got: \'") + std::string{(char) is.peek(), '\''});
+	is.ignore();
+	JSONObject obj;
+	if ((is >> std::ws).peek() == '}') {
+		is.ignore();
 		return obj;
 	}
-	throw JSONException("Invalid string.");
+	do {
+		obj.insert(parseJSONMember(is >> std::ws));
+		if ((is >> std::ws).peek() == '}') {
+			is.ignore();
+			return obj;
+		}
+		if (is.peek() != ',') throw JSONException(std::string("Expected \',\', got: \'") + std::string{(char) is.peek(), '\''});
+		is.ignore();
+	} while (is.good());
+	throw JSONException("Unexpected end of input.");
 }
 
 JSONMember parseJSONMember(std::istream& is) {
 	JSONString str = parseJSONString(is);
-	char c;
-	if (!(is >> std::ws && is >> c)) throw JSONException("Invalid string.");
-	if (!(c == ':' && is >> std::ws)) throw JSONException("Invalid string.");
-	JSONNode node = parseJSON(is);
+	if ((is >> std::ws).peek() != ':') throw JSONException(std::string("Expected \':\', got: \'") + std::string{(char) is.peek(), '\''});
+	is.ignore();
+	JSONNode node = parseJSON(is >> std::ws);
 	return std::make_pair(str, node);
 }
 
 JSONArray parseJSONArray(std::istream& is) {
-	char c;
-	if (is.get() == '[') {
-		if (!(is >> std::ws)) throw JSONException("Invalid string.");
-		JSONArray arr;
-		if (is.peek() == ']') return arr;
-		do {
-			arr.push_back(parseJSON(is));
-			if (!(is >> std::ws && is >> c)) throw JSONException("Invalid string.");
-			if (c == ']') break;
-			if (c != ',') throw JSONException("Unexpected token.");
-		} while (is >> std::ws);
-		if (!is.good()) throw JSONException("Invalid string.");
+	if (is.peek() != '[') throw JSONException(std::string("Expected \'[\', got: \'") + std::string{(char) is.peek(), '\''});
+	is.ignore();
+	JSONArray arr;
+	if ((is >> std::ws).peek() == ']') {
+		is.ignore();
 		return arr;
 	}
-	throw JSONException("Invalid string.");
+	do {
+		arr.push_back(parseJSON(is >> std::ws));
+		if ((is >> std::ws).peek() == ']') {
+			is.ignore();
+			return arr;
+		}
+		if (is.peek() != ',') throw JSONException(std::string("Expected \',\', got: \'") + std::string{(char) is.peek(), '\''});
+		is.ignore();
+	} while (is.good());
+	throw JSONException("Unexpected end of input.");
 }
 
 JSONString parseJSONString(std::istream& is) {
+	if (is.peek() != '\"') throw JSONException(std::string("Expected \'\"\', got: \'") + std::string{(char) is.peek(), '\''});
+	is.ignore();
+	std::ostringstream ss;
+	is >> std::noskipws;
 	char c;
-	if (is.get() == '\"') {
-		std::ostringstream ss;
-		bool escFlag = false;
-		while (is >> c && (c != '\"' || escFlag)) {
-			ss << c;
-			escFlag = (c == '\\');
-		}
-		if (!is.good()) throw JSONException("Invalid string.");
-		return ss.str();
+	while (is.good()) {
+		ss << (c = is.get());
+		if (c == '\\') ss << is.get();
+		if (c == '\"') return ss.str();
 	}
-	throw JSONException("Invalid string.");
+	throw JSONException("Unexpected end of input.");
 }
 
 JSONNumber parseJSONNumber(std::istream& is) {
 	JSONNumber num;
 	if (is >> num)
-		return num;
-	throw JSONException("Invalid string.");
+		return num;	// TODO: Fix this for when there are characters directly following the number
+	throw JSONException("Malformed number.");
 }
 
 JSONBool parseJSONBool(std::istream& is) {
-	char c{'\0'};
-	if (is >> c && c == 't') {
-		char str[4];
-		str[3] = '\0';
-		if (is.read(str, 3)) {
-			if (std::string(str) == "rue") return true;
-		}
-	} else if (c == 'f') {
-		char str[5];
-		str[4] = '\0';
-		if (is.read(str, 4)) {
-			if (std::string(str) == "alse") return false;
-		}
+	if (is.peek() == 't') {
+		char str[5] = {};
+		if (!is.read(str, 4)) throw JSONException("Unexpected end of input.");
+		if (strcmp(str, "true") != 0) throw JSONException(std::string("Malformed boolean: \"") + str + '\"');
+		return true;
+	} else if (is.peek() == 'f') {
+		char str[6] = {};
+		if (!is.read(str, 5)) throw JSONException("Unexpected end of input.");
+		if (strcmp(str, "false") != 0) throw JSONException(std::string("Malformed boolean: \"") + str + '\"');
+		return false;
+
 	}
-	throw JSONException("Invalid string.");
+	throw JSONException(std::string("Expected 't' or 'f', got: \'") + std::string{(char) is.peek(), '\''});
 }
 
 void parseJSONNull(std::istream& is) {
-	char c;
-	if (is.get() == 'n') {
-		char str[3];
-		if (is.getline(str, 3) && std::string(str) == "ull") return;
-	}
-	throw JSONException("Invalid string.");
+	if (is.peek() == 'n') {
+		char str[4];
+		if (!(is.read(str, 4))) throw JSONException("Unexpected end of input.");
+		if (strcmp(str, "null") != 0) throw JSONException(std::string("Malformed null: \"") + std::string(str, 4) + '\"');
+	} else throw JSONException(std::string("Expected \'n\', got: \'") + std::string{(char) is.peek(), '\''});
 }
 
 }
