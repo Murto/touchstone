@@ -5,7 +5,6 @@
 #ifndef JSON_NODE_HPP
 #define JSON_NODE_HPP
 
-#include "meta-type.hpp"
 #include "types.hpp"
 
 #include <ostream>
@@ -46,7 +45,7 @@ public:
 	std::string toString() const;
 	friend std::ostream& operator<<(std::ostream& os, const JSONNode& node);
 private:
-	MetaType type;
+	JSONType type;
 	union Value {
 		Value();
 		Value(const JSONObject& obj);

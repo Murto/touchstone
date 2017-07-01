@@ -16,6 +16,15 @@ typedef std::pair<JSONString, JSONNode> JSONMember;
 typedef double JSONNumber;
 typedef bool JSONBool;
 
+enum class JSONType {
+	OBJECT,
+	ARRAY,
+	STRING,
+	NUMBER,
+	BOOL,
+	NONE
+};
+
 }
 
 #endif
