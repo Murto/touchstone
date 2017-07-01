@@ -22,13 +22,13 @@ JSONNode::JSONNode() : type{MetaType::NONE} {}
 JSONNode::JSONNode(const JSONNode& node) : type{node.type} {
 	switch(type) {
 		case MetaType::OBJECT:
-			value.obj = node.value.obj;
+			new (&value.obj) JSONObject(node.value.obj);
 			break;
 		case MetaType::ARRAY:
-			value.arr = node.value.arr;
+			new (&value.arr) JSONArray(node.value.arr);
 			break;
 		case MetaType::STRING:
-			value.str = node.value.str;
+			new (&value.str) JSONString(node.value.str);
 			break;
 		case MetaType::NUMBER:
 			value.num = node.value.num;
