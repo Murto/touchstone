@@ -117,7 +117,7 @@ JSONString parseJSONString(std::istream& is) {
 JSONNumber parseJSONNumber(std::istream& is) {
 	JSONNumber num;
 	if (is >> num)
-		return num;	// TODO: Fix this for when there are characters directly following the number
+		return num;
 	throw JSONException("Malformed number.");
 }
 
