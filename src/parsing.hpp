@@ -5,14 +5,8 @@
 
 namespace touchstone {
 
-namespace parsing {
-
-using namespace types;
-
 JSONNode parseJSON(const std::string& str);
 JSONNode parseJSON(std::istream& ss);
-
-}
 
 }
 

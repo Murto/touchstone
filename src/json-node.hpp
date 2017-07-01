@@ -12,8 +12,6 @@
 
 namespace touchstone {
 
-namespace types {
-
 class JSONNode {
 public:
 	JSONNode();
@@ -65,8 +63,6 @@ private:
 		
 	} value;
 };
-
-}
 
 }
 

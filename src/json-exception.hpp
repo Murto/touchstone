@@ -5,15 +5,11 @@
 
 namespace touchstone {
 
-namespace types {
-
 class JSONException : public std::runtime_error {
 public:
 	JSONException(const char* msg);
 	const char* what() const noexcept;
 };
-
-}
 
 }
 

@@ -7,10 +7,6 @@
 
 namespace touchstone {
 
-namespace types {
-
-using namespace parsing;
-
 std::string toString(const JSONObject& obj);
 std::string toString(const JSONArray& arr);
 std::string toString(const JSONString& str);
@@ -261,7 +257,5 @@ JSONNode::Value::Value(const JSONBool& boo) {
 }
 
 JSONNode::Value::~Value() {}
-
-}
 
 }

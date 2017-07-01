@@ -8,10 +8,6 @@
 
 namespace touchstone {
 
-namespace parsing {
-
-using namespace types;
-
 JSONNode parseJSON(const std::string& str) {
 	std::istringstream ss(str);
 	return parseJSON(ss);
@@ -104,7 +100,7 @@ JSONArray parseJSONArray(std::istream& ss) {
 JSONString parseJSONString(std::istream& ss) {
 	char c;
 	if (ss.get() == '\"') {
-		std::ostringstream str();
+		std::ostringstream str;
 		bool escFlag = false;
 		while (ss >> c && (c != '\"' || escFlag)) {
 			str << c;
@@ -148,8 +144,6 @@ void parseJSONNull(std::istream& ss) {
 		if (ss.getline(str, 3) && std::string(str) == "ull") return;
 	}
 	throw JSONException("Invalid string.");
-}
-
 }
 
 }

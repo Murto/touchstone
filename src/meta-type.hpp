@@ -3,8 +3,6 @@
 
 namespace touchstone {
 
-namespace types {
-
 enum class MetaType {
 	OBJECT,
 	ARRAY,
@@ -13,8 +11,6 @@ enum class MetaType {
 	BOOL,
 	NONE
 };
-
-}
 
 }
 

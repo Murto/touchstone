@@ -7,7 +7,7 @@
 void printTimeElapsed(const std::chrono::time_point<std::chrono::steady_clock>& start, const std::chrono::time_point<std::chrono::steady_clock>& end);
 
 int main() {
-	using namespace touchstone::parsing;
+	using namespace touchstone;
 	std::ifstream ifs("benchmarks/json/large.json");
 	auto start = std::chrono::steady_clock::now();
 	JSONNode node = parseJSON(ifs);
