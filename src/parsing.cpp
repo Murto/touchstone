@@ -107,9 +107,8 @@ JSONString parseJSONString(std::istream& ss) {
 		std::ostringstream str;
 		bool escFlag = false;
 		while (ss >> c && (c != '\"' || escFlag)) {
-			escFlag = false;
 			str << c;
-			if (c == '\\') escFlag = true;
+			escFlag = (c == '\\');
 		}
 		if (!ss.good()) throw JSONException("Invalid string.");
 		return str.str();
