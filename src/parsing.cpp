@@ -104,7 +104,7 @@ JSONArray parseJSONArray(std::istream& ss) {
 JSONString parseJSONString(std::istream& ss) {
 	char c;
 	if (ss.get() == '\"') {
-		std::ostringstream str;
+		std::ostringstream str();
 		bool escFlag = false;
 		while (ss >> c && (c != '\"' || escFlag)) {
 			str << c;
