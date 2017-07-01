@@ -21,6 +21,7 @@ public:
 	JSONNode(const JSONObject& obj);
 	JSONNode(const JSONArray& arr);
 	JSONNode(const JSONString& str);
+	JSONNode(const char* const str);
 	JSONNode(const JSONNumber& num);
 	JSONNode(const JSONBool& boo);
 	~JSONNode();

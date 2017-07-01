@@ -44,6 +44,8 @@ JSONNode::JSONNode(const JSONArray& arr) : type{MetaType::ARRAY}, value{arr} {}
 
 JSONNode::JSONNode(const JSONString& str) : type{MetaType::STRING}, value{str} {}
 
+JSONNode::JSONNode(const char* const str) : type{MetaType::STRING}, value{std::string(str)} {}
+
 JSONNode::JSONNode(const JSONNumber& num) : type{MetaType::NUMBER}, value{num} {}
 
 JSONNode::JSONNode(const JSONBool& boo) : type{MetaType::BOOL}, value{boo} {}
