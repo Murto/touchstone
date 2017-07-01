@@ -80,7 +80,7 @@ JSONMember parseJSONMember(std::istream& ss) {
 	if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.");
 	if (!(c == ':' && ss >> std::ws)) throw JSONException("Invalid string.");
 	JSONNode node = parseJSON(ss);
-	return JSONMember(str, node);
+	return std::make_pair(str, node);
 }
 
 JSONArray parseJSONArray(std::istream& ss) {
