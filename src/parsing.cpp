@@ -9,27 +9,27 @@
 namespace touchstone {
 
 JSONNode parseJSON(const std::string& str) {
-	std::istringstream ss(str);
-	return parseJSON(ss);
+	std::istringstream is(str);
+	return parseJSON(is);
 }
 
-JSONObject parseJSONObject(std::istream& ss);
-JSONMember parseJSONMember(std::istream& ss);
-JSONArray parseJSONArray(std::istream& ss);
-JSONString parseJSONString(std::istream& ss);
-JSONNumber parseJSONNumber(std::istream& ss);
-JSONBool parseJSONBool(std::istream& ss);
-void parseJSONNull(std::istream& ss);
+JSONObject parseJSONObject(std::istream& is);
+JSONMember parseJSONMember(std::istream& is);
+JSONArray parseJSONArray(std::istream& is);
+JSONString parseJSONString(std::istream& is);
+JSONNumber parseJSONNumber(std::istream& is);
+JSONBool parseJSONBool(std::istream& is);
+void parseJSONNull(std::istream& is);
 
-JSONNode parseJSON(std::istream& ss) {
-	if (ss >> std::ws)
-		switch(ss.peek()) {
+JSONNode parseJSON(std::istream& is) {
+	if (is >> std::ws)
+		switch(is.peek()) {
 			case '{':
-				return JSONNode(parseJSONObject(ss));
+				return JSONNode(parseJSONObject(is));
 			case '[':
-				return JSONNode(parseJSONArray(ss));
+				return JSONNode(parseJSONArray(is));
 			case '\"':
-				return JSONNode(parseJSONString(ss));
+				return JSONNode(parseJSONString(is));
 			case '-':
 			case '0':
 			case '1':
@@ -41,107 +41,107 @@ JSONNode parseJSON(std::istream& ss) {
 			case '7':
 			case '8':
 			case '9':
-				return JSONNode(parseJSONNumber(ss));
+				return JSONNode(parseJSONNumber(is));
 			case 't':
 			case 'f':
-				return JSONNode(parseJSONBool(ss));
+				return JSONNode(parseJSONBool(is));
 			case 'n':
-				parseJSONNull(ss);
+				parseJSONNull(is);
 				return JSONNode();
 		}
 	throw JSONException("Invalid string.");
 }
 
-JSONObject parseJSONObject(std::istream& ss) {
+JSONObject parseJSONObject(std::istream& is) {
 	char c;
-	if (ss.get() == '{') {
-		if (!(ss >> std::ws)) throw JSONException("Invalid string.");
+	if (is.get() == '{') {
+		if (!(is >> std::ws)) throw JSONException("Invalid string.");
 		JSONObject obj;
-		if (ss.peek() == '}') return obj;
+		if (is.peek() == '}') return obj;
 		do {
-			obj.insert(parseJSONMember(ss));
-			if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.");
+			obj.insert(parseJSONMember(is));
+			if (!(is >> std::ws && is >> c)) throw JSONException("Invalid string.");
 			if (c == '}') break;
 			if (c != ',') throw JSONException("Unexpected token.");
-		} while (ss >> std::ws);
-		if (!ss.good()) throw JSONException("Invalid string.");
+		} while (is >> std::ws);
+		if (!is.good()) throw JSONException("Invalid string.");
 		return obj;
 	}
 	throw JSONException("Invalid string.");
 }
 
-JSONMember parseJSONMember(std::istream& ss) {
-	JSONString str = parseJSONString(ss);
+JSONMember parseJSONMember(std::istream& is) {
+	JSONString str = parseJSONString(is);
 	char c;
-	if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.");
-	if (!(c == ':' && ss >> std::ws)) throw JSONException("Invalid string.");
-	JSONNode node = parseJSON(ss);
+	if (!(is >> std::ws && is >> c)) throw JSONException("Invalid string.");
+	if (!(c == ':' && is >> std::ws)) throw JSONException("Invalid string.");
+	JSONNode node = parseJSON(is);
 	return std::make_pair(str, node);
 }
 
-JSONArray parseJSONArray(std::istream& ss) {
+JSONArray parseJSONArray(std::istream& is) {
 	char c;
-	if (ss.get() == '[') {
-		if (!(ss >> std::ws)) throw JSONException("Invalid string.");
+	if (is.get() == '[') {
+		if (!(is >> std::ws)) throw JSONException("Invalid string.");
 		JSONArray arr;
-		if (ss.peek() == ']') return arr;
+		if (is.peek() == ']') return arr;
 		do {
-			arr.push_back(parseJSON(ss));
-			if (!(ss >> std::ws && ss >> c)) throw JSONException("Invalid string.");
+			arr.push_back(parseJSON(is));
+			if (!(is >> std::ws && is >> c)) throw JSONException("Invalid string.");
 			if (c == ']') break;
 			if (c != ',') throw JSONException("Unexpected token.");
-		} while (ss >> std::ws);
-		if (!ss.good()) throw JSONException("Invalid string.");
+		} while (is >> std::ws);
+		if (!is.good()) throw JSONException("Invalid string.");
 		return arr;
 	}
 	throw JSONException("Invalid string.");
 }
 
-JSONString parseJSONString(std::istream& ss) {
+JSONString parseJSONString(std::istream& is) {
 	char c;
-	if (ss.get() == '\"') {
-		std::ostringstream str;
+	if (is.get() == '\"') {
+		std::ostringstream ss;
 		bool escFlag = false;
-		while (ss >> c && (c != '\"' || escFlag)) {
-			str << c;
+		while (is >> c && (c != '\"' || escFlag)) {
+			ss << c;
 			escFlag = (c == '\\');
 		}
-		if (!ss.good()) throw JSONException("Invalid string.");
-		return str.str();
+		if (!is.good()) throw JSONException("Invalid string.");
+		return ss.str();
 	}
 	throw JSONException("Invalid string.");
 }
 
-JSONNumber parseJSONNumber(std::istream& ss) {
+JSONNumber parseJSONNumber(std::istream& is) {
 	JSONNumber num;
-	if (ss >> num)
+	if (is >> num)
 		return num;
 	throw JSONException("Invalid string.");
 }
 
-JSONBool parseJSONBool(std::istream& ss) {
+JSONBool parseJSONBool(std::istream& is) {
 	char c{'\0'};
-	if (ss >> c && c == 't') {
+	if (is >> c && c == 't') {
 		char str[4];
 		str[3] = '\0';
-		if (ss.read(str, 3)) {
+		if (is.read(str, 3)) {
 			if (std::string(str) == "rue") return true;
 		}
 	} else if (c == 'f') {
 		char str[5];
 		str[4] = '\0';
-		if (ss.read(str, 4)) {
+		if (is.read(str, 4)) {
 			if (std::string(str) == "alse") return false;
 		}
 	}
 	throw JSONException("Invalid string.");
 }
 
-void parseJSONNull(std::istream& ss) {
+void parseJSONNull(std::istream& is) {
 	char c;
-	if (ss.get() == 'n') {
+	if (is.get() == 'n') {
 		char str[3];
-		if (ss.getline(str, 3) && std::string(str) == "ull") return;
+		if (is.getline(str, 3) && std::string(str) == "ull") return;
 	}
 	throw JSONException("Invalid string.");
 }
