@@ -1,7 +1,6 @@
 #ifndef JSON_EXCEPTION_HPP
 #define JSON_EXCEPTION_HPP
 
-#include <istream>
 #include <stdexcept>
 #include <string>
 
