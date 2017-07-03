@@ -33,7 +33,7 @@ JSONNode::JSONNode(const JSONNode& node) : type{node.type} {
 	}
 }
 
-JSONNode::JSONNode(const JSONNode&& node) : type{node.type} {
+JSONNode::JSONNode(JSONNode&& node) : type{node.type} {
 	switch(type) {
 		case JSONType::OBJECT:
 			new (&value.obj) JSONObject(std::move(node.value.obj));
@@ -54,19 +54,19 @@ JSONNode::JSONNode(const JSONNode&& node) : type{node.type} {
 
 JSONNode::JSONNode(const JSONObject& obj) : type{JSONType::OBJECT}, value{obj} {}
 
-JSONNode::JSONNode(const JSONObject&& obj) : type{JSONType::OBJECT} {
+JSONNode::JSONNode(JSONObject&& obj) : type{JSONType::OBJECT} {
 	new (&value.obj) JSONObject(std::move(obj));
 }
 
 JSONNode::JSONNode(const JSONArray& arr) : type{JSONType::ARRAY}, value{arr} {}
 
-JSONNode::JSONNode(const JSONArray&& arr) : type{JSONType::ARRAY} {
+JSONNode::JSONNode(JSONArray&& arr) : type{JSONType::ARRAY} {
 	new (&value.arr) JSONArray(std::move(arr));
 }
 
 JSONNode::JSONNode(const JSONString& str) : type{JSONType::STRING}, value{str} {}
 
-JSONNode::JSONNode(const JSONString&& str) : type{JSONType::STRING} {
+JSONNode::JSONNode(JSONString&& str) : type{JSONType::STRING} {
 	new (&value.str) JSONString(std::move(str));
 }
 
@@ -99,7 +99,7 @@ JSONNode& JSONNode::operator=(const JSONNode& node) {
 	return *this;
 }
 
-JSONNode& JSONNode::operator=(const JSONNode&& node) {
+JSONNode& JSONNode::operator=(JSONNode&& node) {
 		switch(node.type) {
 		case JSONType::OBJECT:
 			return *this = std::move(node.value.obj);
@@ -130,7 +130,7 @@ JSONNode& JSONNode::operator=(const JSONObject& obj) {
 	return *this;
 }
 
-JSONNode& JSONNode::operator=(const JSONObject&& obj) {
+JSONNode& JSONNode::operator=(JSONObject&& obj) {
 	if (type == JSONType::OBJECT) {
 		value.obj = std::move(obj);
 		return *this;
@@ -158,7 +158,7 @@ JSONNode& JSONNode::operator=(const JSONArray& arr) {
 	return *this;
 }
 
-JSONNode& JSONNode::operator=(const JSONArray&& arr) {
+JSONNode& JSONNode::operator=(JSONArray&& arr) {
 	if (type == JSONType::ARRAY) {
 		value.arr = std::move(arr);
 		return *this;
@@ -186,7 +186,7 @@ JSONNode& JSONNode::operator=(const JSONString& str) {
 	return *this;
 }
 
-JSONNode& JSONNode::operator=(const JSONString&& str) {
+JSONNode& JSONNode::operator=(JSONString&& str) {
 	if (type == JSONType::STRING) {
 		value.str = std::move(str);
 		return *this;
