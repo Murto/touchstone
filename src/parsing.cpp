@@ -136,10 +136,12 @@ JSONBool parseJSONBool(std::istream& is) {
 
 void parseJSONNull(std::istream& is) {
 	if (is.peek() == 'n') {
-		char str[4];
+		char str[5] = {};
 		if (!(is.read(str, 4))) throw JSONException("Unexpected end of input.");
 		if (strcmp(str, "null") != 0) throw JSONException(std::string("Malformed null: \"") + std::string(str, 4) + '\"');
-	} else throw JSONException(std::string("Expected \'n\', got: \'") + std::string{(char) is.peek(), '\''});
+	} else {
+		throw JSONException(std::string("Expected \'n\', got: \'") + std::string{(char) is.peek(), '\''});
+	}
 }
 
 }
