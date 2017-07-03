@@ -3,7 +3,9 @@
 #include "parsing.hpp"
 
 #include <cstring>
+#include <list>
 #include <istream>
+#include <iterator>
 #include <sstream>
 
 namespace touchstone {
@@ -60,7 +62,7 @@ JSONObject parseJSONObject(std::istream& is) {
 		return obj;
 	}
 	do {
-		obj.insert(parseJSONMember(is >> std::ws));
+		obj.emplace(parseJSONMember(is >> std::ws));
 		if ((is >> std::ws).peek() == '}') {
 			is.ignore();
 			return obj;
@@ -80,20 +82,23 @@ JSONMember parseJSONMember(std::istream& is) {
 JSONArray parseJSONArray(std::istream& is) {
 	if (is.peek() != '[') throw JSONException(std::string("Expected \'[\', got: \'") + std::string{(char) is.peek(), '\''});
 	is.ignore();
-	JSONArray arr;
+	std::list<JSONNode> items;
 	if ((is >> std::ws).peek() == ']') {
 		is.ignore();
-		return arr;
+		JSONArray arr;
+		arr.reserve(items.size());
+		return JSONArray{std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
 	}
 	do {
-		arr.push_back(parseJSON(is >> std::ws));
+		items.emplace_back(parseJSON(is >> std::ws));
 		if ((is >> std::ws).peek() == ']') {
 			is.ignore();
-			return arr;
+			JSONArray arr;
+			arr.reserve(items.size());
+			return JSONArray{std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
 		}
 		if (is.peek() != ',') throw JSONException(std::string("Expected \',\', got: \'") + std::string{(char) is.peek(), '\''});
-		is.ignore();
-	} while (is.good());
+	} while (is.ignore().good());
 	throw JSONException("Unexpected end of input.");
 }
 
