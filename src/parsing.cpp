@@ -13,13 +13,13 @@ JSONNode parseJSON(const std::string& str) {
 	return parseJSON(is);
 }
 
-JSONObject parseJSONObject(std::istream& is);
-JSONMember parseJSONMember(std::istream& is);
-JSONArray parseJSONArray(std::istream& is);
-JSONString parseJSONString(std::istream& is);
-JSONNumber parseJSONNumber(std::istream& is);
-JSONBool parseJSONBool(std::istream& is);
-void parseJSONNull(std::istream& is);
+JSONObject parseJSONObject(std::istream&);
+JSONMember parseJSONMember(std::istream&);
+JSONArray parseJSONArray(std::istream&);
+JSONString parseJSONString(std::istream&);
+JSONNumber parseJSONNumber(std::istream&);
+JSONBool parseJSONBool(std::istream&);
+void parseJSONNull(std::istream&);
 
 JSONNode parseJSON(std::istream& is) {
 	switch(is.peek()) {

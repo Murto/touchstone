@@ -5,8 +5,8 @@
 
 namespace touchstone {
 
-JSONNode parseJSON(const std::string& str);
-JSONNode parseJSON(std::istream& is);
+JSONNode parseJSON(const std::string&);
+JSONNode parseJSON(std::istream&);
 
 }
 

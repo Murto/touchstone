@@ -8,7 +8,7 @@ namespace touchstone {
 
 class JSONException : public std::runtime_error {
 public:
-	JSONException(const std::string& msg);
+	JSONException(const std::string&);
 	const char* what() const noexcept;
 };
 

@@ -6,11 +6,11 @@
 
 namespace touchstone {
 
-std::string toString(const JSONObject& obj);
-std::string toString(const JSONArray& arr);
-std::string toString(const JSONString& str);
-std::string toString(const JSONNumber& num);
-std::string toString(const JSONBool& boo);
+std::string toString(const JSONObject&);
+std::string toString(const JSONArray&);
+std::string toString(const JSONString&);
+std::string toString(const JSONNumber&);
+std::string toString(const JSONBool&);
 
 JSONNode::JSONNode() : type{JSONType::NONE} {}
 
