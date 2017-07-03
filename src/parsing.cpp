@@ -74,9 +74,7 @@ JSONObject parseJSONObject(std::istream& is) {
 JSONMember parseJSONMember(std::istream& is) {
 	JSONString str = parseJSONString(is);
 	if ((is >> std::ws).peek() != ':') throw JSONException(std::string("Expected \':\', got: \'") + std::string{(char) is.peek(), '\''});
-	is.ignore();
-	JSONNode node = parseJSON(is >> std::ws);
-	return std::make_pair(str, node);
+	return std::make_pair(str, parseJSON(is.ignore() >> std::ws));
 }
 
 JSONArray parseJSONArray(std::istream& is) {
