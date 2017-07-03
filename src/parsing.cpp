@@ -104,9 +104,10 @@ JSONString parseJSONString(std::istream& is) {
 	is >> std::noskipws;
 	char c;
 	while (is.good()) {
-		ss << (c = is.get());
-		if (c == '\\') ss << is.get();
+		is >> c;
 		if (c == '\"') return ss.str();
+		ss << c;
+		if (c == '\\') ss << is.get();
 	}
 	throw JSONException("Unexpected end of input.");
 }
