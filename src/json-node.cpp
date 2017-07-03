@@ -33,17 +33,48 @@ JSONNode::JSONNode(const JSONNode& node) : type{node.type} {
 	}
 }
 
+JSONNode::JSONNode(const JSONNode&& node) : type{node.type} {
+	switch(type) {
+		case JSONType::OBJECT:
+			new (&value.obj) JSONObject(std::move(node.value.obj));
+			break;
+		case JSONType::ARRAY:
+			new (&value.arr) JSONArray(std::move(node.value.arr));
+			break;
+		case JSONType::STRING:
+			new (&value.str) JSONString(std::move(node.value.str));
+			break;
+		case JSONType::NUMBER:
+			value.num = node.value.num;
+			break;
+		case JSONType::BOOL:
+			value.boo = node.value.boo;
+	}
+}
+
 JSONNode::JSONNode(const JSONObject& obj) : type{JSONType::OBJECT}, value{obj} {}
+
+JSONNode::JSONNode(const JSONObject&& obj) : type{JSONType::OBJECT} {
+	new (&value.obj) JSONObject(std::move(obj));
+}
 
 JSONNode::JSONNode(const JSONArray& arr) : type{JSONType::ARRAY}, value{arr} {}
 
+JSONNode::JSONNode(const JSONArray&& arr) : type{JSONType::ARRAY} {
+	new (&value.arr) JSONArray(std::move(arr));
+}
+
 JSONNode::JSONNode(const JSONString& str) : type{JSONType::STRING}, value{str} {}
+
+JSONNode::JSONNode(const JSONString&& str) : type{JSONType::STRING} {
+	new (&value.str) JSONString(std::move(str));
+}
 
 JSONNode::JSONNode(const char* const str) : type{JSONType::STRING}, value{std::string(str)} {}
 
-JSONNode::JSONNode(const JSONNumber& num) : type{JSONType::NUMBER}, value{num} {}
+JSONNode::JSONNode(const JSONNumber num) : type{JSONType::NUMBER}, value{num} {}
 
-JSONNode::JSONNode(const JSONBool& boo) : type{JSONType::BOOL}, value{boo} {}
+JSONNode::JSONNode(const JSONBool boo) : type{JSONType::BOOL}, value{boo} {}
 
 JSONNode::~JSONNode() {
 	if (type == JSONType::OBJECT) value.obj.~JSONObject();
@@ -52,23 +83,36 @@ JSONNode::~JSONNode() {
 }
 
 JSONNode& JSONNode::operator=(const JSONNode& node) {
-	type = node.type;
-	switch(type) {
+	switch(node.type) {
 		case JSONType::OBJECT:
-			value.obj = node.value.obj;
-			break;
+			return *this = node.value.obj;
 		case JSONType::ARRAY:
-			value.arr = node.value.arr;
-			break;
+			return *this = node.value.arr;
 		case JSONType::STRING:
-			value.str = node.value.str;
-			break;
+			return *this = node.value.str;
 		case JSONType::NUMBER:
-			value.num = node.value.num;
-			break;
+			return *this = node.value.num;
 		case JSONType::BOOL:
-			value.boo = node.value.boo;
+			return *this = node.value.boo;
 	}
+	type = JSONType::NONE;
+	return *this;
+}
+
+JSONNode& JSONNode::operator=(const JSONNode&& node) {
+		switch(node.type) {
+		case JSONType::OBJECT:
+			return *this = std::move(node.value.obj);
+		case JSONType::ARRAY:
+			return *this = std::move(node.value.arr);
+		case JSONType::STRING:
+			return *this = std::move(node.value.str);
+		case JSONType::NUMBER:
+			return *this = node.value.num;
+		case JSONType::BOOL:
+			return *this = node.value.boo;
+	}
+	type = JSONType::NONE;
 	return *this;
 }
 
@@ -86,6 +130,20 @@ JSONNode& JSONNode::operator=(const JSONObject& obj) {
 	return *this;
 }
 
+JSONNode& JSONNode::operator=(const JSONObject&& obj) {
+	if (type == JSONType::OBJECT) {
+		value.obj = std::move(obj);
+		return *this;
+	} else if (type == JSONType::ARRAY) {
+		value.arr.~JSONArray();
+	} else if(type == JSONType::STRING) {
+		value.str.~JSONString();
+	}
+	type = JSONType::OBJECT;
+	new (&value.obj) JSONObject(std::move(obj));
+	return *this;
+}
+
 JSONNode& JSONNode::operator=(const JSONArray& arr) {
 	if (type == JSONType::ARRAY) {
 		value.arr = arr;
@@ -97,6 +155,20 @@ JSONNode& JSONNode::operator=(const JSONArray& arr) {
 	}
 	type = JSONType::ARRAY;
 	new (&value.arr) JSONArray(arr);
+	return *this;
+}
+
+JSONNode& JSONNode::operator=(const JSONArray&& arr) {
+	if (type == JSONType::ARRAY) {
+		value.arr = std::move(arr);
+		return *this;
+	} else if (type == JSONType::OBJECT) {
+		value.obj.~JSONObject();
+	} else if (type == JSONType::STRING) {
+		value.str.~JSONString();
+	}
+	type = JSONType::ARRAY;
+	new (&value.arr) JSONArray(std::move(arr));
 	return *this;
 }
 
@@ -113,6 +185,21 @@ JSONNode& JSONNode::operator=(const JSONString& str) {
 	new (&value.str) JSONString(str);
 	return *this;
 }
+
+JSONNode& JSONNode::operator=(const JSONString&& str) {
+	if (type == JSONType::STRING) {
+		value.str = std::move(str);
+		return *this;
+	} else if (type == JSONType::OBJECT) {
+		value.obj.~JSONObject();
+	} else if (type == JSONType::ARRAY) {
+		value.arr.~JSONArray();
+	}
+	type = JSONType::STRING;
+	new (&value.str) JSONString(std::move(str));
+	return *this;
+}
+
 
 JSONNode& JSONNode::operator=(const JSONNumber& num) {
 	if (type == JSONType::OBJECT) value.obj.~JSONObject();

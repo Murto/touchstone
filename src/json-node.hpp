@@ -15,17 +15,25 @@ class JSONNode {
 public:
 	JSONNode();
 	JSONNode(const JSONNode&);
+	JSONNode(const JSONNode&&);
 	JSONNode(const JSONObject&);
+	JSONNode(const JSONObject&&);
 	JSONNode(const JSONArray&);
+	JSONNode(const JSONArray&&);
 	JSONNode(const JSONString&);
+	JSONNode(const JSONString&&);
 	JSONNode(const char* const);
-	JSONNode(const JSONNumber&);
-	JSONNode(const JSONBool&);
+	JSONNode(const JSONNumber);
+	JSONNode(const JSONBool);
 	~JSONNode();
 	JSONNode& operator=(const JSONNode&);
+	JSONNode& operator=(const JSONNode&&);
 	JSONNode& operator=(const JSONObject&);
+	JSONNode& operator=(const JSONObject&&);
 	JSONNode& operator=(const JSONArray&);
+	JSONNode& operator=(const JSONArray&&);
 	JSONNode& operator=(const JSONString&);
+	JSONNode& operator=(const JSONString&&);
 	JSONNode& operator=(const JSONNumber&);
 	JSONNode& operator=(const JSONBool&);
 	bool isObject();
