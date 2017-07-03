@@ -317,9 +317,7 @@ std::string JSONNode::toString() const {
 	return static_cast<std::stringstream&>(std::stringstream() << *this).str();
 }
 
-JSONNode::Value::Value() {
-	std::memset(this, 0, sizeof(*this));
-}
+JSONNode::Value::Value() {}
 
 
 JSONNode::Value::Value(const JSONObject& obj) {
