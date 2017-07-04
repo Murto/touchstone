@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include <list>
+#include <iostream>
 #include <istream>
 #include <iterator>
 #include <sstream>
@@ -101,15 +102,13 @@ JSONArray parseJSONArray(std::istream& is) {
 JSONString parseJSONString(std::istream& is) {
 	if (is.peek() != '\"') throw JSONException(std::string("Expected \'\"\', got: \'") + std::string{(char) is.peek(), '\''});
 	is.ignore();
-	std::ostringstream ss;
-	is >> std::noskipws;
-	char c;
-	while (is.good()) {
-		is >> c;
-		if (c == '\"') return ss.str();
-		ss << c;
-		if (c == '\\') ss << is.get();
-	}
+	std::string str;
+	std::istream_iterator<char> it(is);
+	do {
+		if (*it == '\"') return str;
+		str += *it;
+		if (*it == '\\') str += *++it;
+	} while (++it != std::istream_iterator<char>());
 	throw JSONException("Unexpected end of input.");
 }
 
