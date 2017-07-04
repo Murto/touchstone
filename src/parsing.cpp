@@ -27,11 +27,11 @@ void parseJSONNull(std::istream&);
 JSONNode parseJSON(std::istream& is) {
 	switch(is.peek()) {
 		case '{':
-			return JSONNode{parseJSONObject(is)};
+			return {parseJSONObject(is)};
 		case '[':
-			return JSONNode{parseJSONArray(is)};
+			return {parseJSONArray(is)};
 		case '\"':
-			return JSONNode{parseJSONString(is)};
+			return {parseJSONString(is)};
 		case '-':
 		case '0':
 		case '1':
@@ -43,13 +43,13 @@ JSONNode parseJSON(std::istream& is) {
 		case '7':
 		case '8':
 		case '9':
-			return JSONNode{parseJSONNumber(is)};
+			return {parseJSONNumber(is)};
 		case 't':
 		case 'f':
-			return JSONNode{parseJSONBool(is)};
+			return {parseJSONBool(is)};
 		case 'n':
 			parseJSONNull(is);
-			return JSONNode{};
+			return {};
 	}
 	throw JSONException{std::string{"Unexpected character: \'"} + std::string{(char) is.peek(), '\''}};
 }
@@ -77,7 +77,7 @@ JSONObject parseJSONObject(std::istream& is) {
 JSONMember parseJSONMember(std::istream& is) {
 	JSONString str{parseJSONString(is)};
 	if ((is >> std::ws).peek() != ':') throw JSONException{std::string("Expected \':\', got: \'") + std::string{(char) is.peek(), '\''}};
-	return std::make_pair(str, parseJSON(is.ignore() >> std::ws));
+	return {str, parseJSON(is.ignore() >> std::ws)};
 }
 
 JSONArray parseJSONArray(std::istream& is) {
@@ -86,13 +86,13 @@ JSONArray parseJSONArray(std::istream& is) {
 	std::list<JSONNode> items;
 	if ((is >> std::ws).peek() == ']') {
 		is.ignore();
-		return JSONArray{std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
+		return {std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
 	}
 	do {
 		items.emplace_back(parseJSON(is >> std::ws));
 		if ((is >> std::ws).peek() == ']') {
 			is.ignore();
-			return JSONArray{std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
+			return {std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
 		}
 		if (is.peek() != ',') throw JSONException{std::string{"Expected \',\', got: \'"} + std::string{(char) is.peek(), '\''}};
 	} while (is.ignore().good());
