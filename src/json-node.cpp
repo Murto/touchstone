@@ -276,37 +276,37 @@ bool JSONNode::isNull() {
 
 JSONObject& JSONNode::getObject() {
 	if (type == JSONType::OBJECT) return value.obj;
-	throw JSONException("Invalid type.");
+	throw JSONException{"Invalid type."};
 }
 
 JSONArray& JSONNode::getArray() {
 	if (type == JSONType::ARRAY) return value.arr;
-	throw JSONException("Invalid type.");
+	throw JSONException{"Invalid type."};
 }
 
 JSONString& JSONNode::getString() {
 	if (type == JSONType::STRING) return value.str;
-	throw JSONException("Invalid type.");
+	throw JSONException{"Invalid type."};
 }
 
 JSONNumber& JSONNode::getNumber() {
 	if (type == JSONType::NUMBER) return value.num;
-	throw JSONException("Invalid type.");
+	throw JSONException{"Invalid type."};
 }
 
 JSONBool& JSONNode::getBool() {
 	if (type == JSONType::BOOL) return value.boo;
-	throw JSONException("Invalid type.");
+	throw JSONException{"Invalid type."};
 }
 
 JSONNode& JSONNode::getNode(const JSONObject::key_type& key) {
 	if (type == JSONType::OBJECT) return value.obj.at(key);
-	throw JSONException("Invalid operation.");
+	throw JSONException{"Invalid operation."};
 }
 
 JSONNode& JSONNode::getNode(const JSONArray::size_type& pos) {
 	if (type == JSONType::ARRAY) return value.arr.at(pos);
-	throw JSONException("Invalid operation.");
+	throw JSONException{"Invalid operation."};
 }
 
 void JSONNode::nullify() {
