@@ -27,11 +27,11 @@ void parseJSONNull(std::istream&);
 JSONNode parseJSON(std::istream& is) {
 	switch(is.peek()) {
 		case '{':
-			return JSONNode(parseJSONObject(is));
+			return JSONNode{parseJSONObject(is)};
 		case '[':
-			return JSONNode(parseJSONArray(is));
+			return JSONNode{parseJSONArray(is)};
 		case '\"':
-			return JSONNode(parseJSONString(is));
+			return JSONNode{parseJSONString(is)};
 		case '-':
 		case '0':
 		case '1':
@@ -43,19 +43,19 @@ JSONNode parseJSON(std::istream& is) {
 		case '7':
 		case '8':
 		case '9':
-			return JSONNode(parseJSONNumber(is));
+			return JSONNode{parseJSONNumber(is)};
 		case 't':
 		case 'f':
-			return JSONNode(parseJSONBool(is));
+			return JSONNode{parseJSONBool(is)};
 		case 'n':
 			parseJSONNull(is);
-			return JSONNode();
+			return JSONNode{};
 	}
-	throw JSONException(std::string("Unexpected character: \'") + std::string{(char) is.peek(), '\''});
+	throw JSONException{std::string{"Unexpected character: \'"} + std::string{(char) is.peek(), '\''}};
 }
 
 JSONObject parseJSONObject(std::istream& is) {
-	if (is.peek() != '{') throw JSONException(std::string("Expected \'{\', got: \'") + std::string{(char) is.peek(), '\''});
+	if (is.peek() != '{') throw JSONException{std::string{"Expected \'{\', got: \'"} + std::string{(char) is.peek(), '\''}};
 	is.ignore();
 	JSONObject obj;
 	if ((is >> std::ws).peek() == '}') {
@@ -68,20 +68,20 @@ JSONObject parseJSONObject(std::istream& is) {
 			is.ignore();
 			return obj;
 		}
-		if (is.peek() != ',') throw JSONException(std::string("Expected \',\', got: \'") + std::string{(char) is.peek(), '\''});
+		if (is.peek() != ',') throw JSONException{std::string{"Expected \',\', got: \'"} + std::string{(char) is.peek(), '\''}};
 		is.ignore();
 	} while (is.good());
-	throw JSONException("Unexpected end of input.");
+	throw JSONException{"Unexpected end of input."};
 }
 
 JSONMember parseJSONMember(std::istream& is) {
-	JSONString str = parseJSONString(is);
-	if ((is >> std::ws).peek() != ':') throw JSONException(std::string("Expected \':\', got: \'") + std::string{(char) is.peek(), '\''});
+	JSONString str{parseJSONString(is)};
+	if ((is >> std::ws).peek() != ':') throw JSONException{std::string("Expected \':\', got: \'") + std::string{(char) is.peek(), '\''}};
 	return std::make_pair(str, parseJSON(is.ignore() >> std::ws));
 }
 
 JSONArray parseJSONArray(std::istream& is) {
-	if (is.peek() != '[') throw JSONException(std::string("Expected \'[\', got: \'") + std::string{(char) is.peek(), '\''});
+	if (is.peek() != '[') throw JSONException{std::string{"Expected \'[\', got: \'"} + std::string{(char) is.peek(), '\''}};
 	is.ignore();
 	std::list<JSONNode> items;
 	if ((is >> std::ws).peek() == ']') {
@@ -94,54 +94,54 @@ JSONArray parseJSONArray(std::istream& is) {
 			is.ignore();
 			return JSONArray{std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
 		}
-		if (is.peek() != ',') throw JSONException(std::string("Expected \',\', got: \'") + std::string{(char) is.peek(), '\''});
+		if (is.peek() != ',') throw JSONException{std::string{"Expected \',\', got: \'"} + std::string{(char) is.peek(), '\''}};
 	} while (is.ignore().good());
-	throw JSONException("Unexpected end of input.");
+	throw JSONException{"Unexpected end of input."};
 }
 
 JSONString parseJSONString(std::istream& is) {
-	if (is.peek() != '\"') throw JSONException(std::string("Expected \'\"\', got: \'") + std::string{(char) is.peek(), '\''});
+	if (is.peek() != '\"') throw JSONException{std::string{"Expected \'\"\', got: \'"} + std::string{(char) is.peek(), '\''}};
 	is.ignore();
 	std::string str;
-	std::istream_iterator<char> it(is);
+	std::istream_iterator<char> it{is};
 	do {
 		if (*it == '\"') return str;
 		str += *it;
 		if (*it == '\\') str += *++it;
 	} while (++it != std::istream_iterator<char>());
-	throw JSONException("Unexpected end of input.");
+	throw JSONException{"Unexpected end of input."};
 }
 
 JSONNumber parseJSONNumber(std::istream& is) {
 	JSONNumber num;
 	if (is >> num)
 		return num;
-	throw JSONException("Malformed number.");
+	throw JSONException{"Malformed number."};
 }
 
 JSONBool parseJSONBool(std::istream& is) {
 	if (is.peek() == 't') {
 		char str[5] = {};
-		if (!is.read(str, 4)) throw JSONException("Unexpected end of input.");
-		if (strcmp(str, "true") != 0) throw JSONException(std::string("Malformed boolean: \"") + str + '\"');
+		if (!is.read(str, 4)) throw JSONException{"Unexpected end of input."};
+		if (strcmp(str, "true") != 0) throw JSONException{std::string{"Malformed boolean: \""} + str + '\"'};
 		return true;
 	} else if (is.peek() == 'f') {
 		char str[6] = {};
-		if (!is.read(str, 5)) throw JSONException("Unexpected end of input.");
-		if (strcmp(str, "false") != 0) throw JSONException(std::string("Malformed boolean: \"") + str + '\"');
+		if (!is.read(str, 5)) throw JSONException{"Unexpected end of input."};
+		if (strcmp(str, "false") != 0) throw JSONException{std::string{"Malformed boolean: \""} + str + '\"'};
 		return false;
 
 	}
-	throw JSONException(std::string("Expected 't' or 'f', got: \'") + std::string{(char) is.peek(), '\''});
+	throw JSONException{std::string{"Expected 't' or 'f', got: \'"} + std::string{(char) is.peek(), '\''}};
 }
 
 void parseJSONNull(std::istream& is) {
 	if (is.peek() == 'n') {
 		char str[5] = {};
-		if (!(is.read(str, 4))) throw JSONException("Unexpected end of input.");
-		if (strcmp(str, "null") != 0) throw JSONException(std::string("Malformed null: \"") + std::string(str, 4) + '\"');
+		if (!(is.read(str, 4))) throw JSONException{"Unexpected end of input."};
+		if (strcmp(str, "null") != 0) throw JSONException{std::string{"Malformed null: \""} + std::string{str, 4} + '\"'};
 	} else {
-		throw JSONException(std::string("Expected \'n\', got: \'") + std::string{(char) is.peek(), '\''});
+		throw JSONException{std::string{"Expected \'n\', got: \'"} + std::string{(char) is.peek(), '\''}};
 	}
 }
 
