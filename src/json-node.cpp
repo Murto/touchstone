@@ -17,13 +17,13 @@ JSONNode::JSONNode() : type{JSONType::NONE} {}
 JSONNode::JSONNode(const JSONNode& node) : type{node.type} {
 	switch(type) {
 		case JSONType::OBJECT:
-			new (&value.obj) JSONObject(node.value.obj);
+			new (&value.obj) JSONObject{node.value.obj};
 			break;
 		case JSONType::ARRAY:
-			new (&value.arr) JSONArray(node.value.arr);
+			new (&value.arr) JSONArray{node.value.arr};
 			break;
 		case JSONType::STRING:
-			new (&value.str) JSONString(node.value.str);
+			new (&value.str) JSONString{node.value.str};
 			break;
 		case JSONType::NUMBER:
 			value.num = node.value.num;
@@ -126,7 +126,7 @@ JSONNode& JSONNode::operator=(const JSONObject& obj) {
 		value.str.~JSONString();
 	}
 	type = JSONType::OBJECT;
-	new (&value.obj) JSONObject(obj);
+	new (&value.obj) JSONObject{obj};
 	return *this;
 }
 
@@ -154,7 +154,7 @@ JSONNode& JSONNode::operator=(const JSONArray& arr) {
 		value.str.~JSONString();
 	}
 	type = JSONType::ARRAY;
-	new (&value.arr) JSONArray(arr);
+	new (&value.arr) JSONArray{arr};
 	return *this;
 }
 
@@ -182,7 +182,7 @@ JSONNode& JSONNode::operator=(const JSONString& str) {
 		value.arr.~JSONArray();
 	}
 	type = JSONType::STRING;
-	new (&value.str) JSONString(str);
+	new (&value.str) JSONString{str};
 	return *this;
 }
 
@@ -321,23 +321,23 @@ JSONNode::Value::Value() {}
 
 
 JSONNode::Value::Value(const JSONObject& obj) {
-	new(&this->obj) JSONObject(obj);
+	new(&this->obj) JSONObject{obj};
 }
 
 JSONNode::Value::Value(const JSONArray& arr) {
-	new(&this->arr) JSONArray(arr);
+	new(&this->arr) JSONArray{arr};
 }
 
 JSONNode::Value::Value(const JSONString& str) {
-	new(&this->str) JSONString(str);
+	new(&this->str) JSONString{str};
 }
 
 JSONNode::Value::Value(const JSONNumber& num) {
-	new(&this->num) JSONNumber(num);
+	new(&this->num) JSONNumber{num};
 }
 
 JSONNode::Value::Value(const JSONBool& boo) {
-	new (&this->boo) JSONBool(boo);
+	new (&this->boo) JSONBool{boo};
 }
 
 JSONNode::Value::~Value() {}
