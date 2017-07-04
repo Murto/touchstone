@@ -85,16 +85,12 @@ JSONArray parseJSONArray(std::istream& is) {
 	std::list<JSONNode> items;
 	if ((is >> std::ws).peek() == ']') {
 		is.ignore();
-		JSONArray arr;
-		arr.reserve(items.size());
 		return JSONArray{std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
 	}
 	do {
 		items.emplace_back(parseJSON(is >> std::ws));
 		if ((is >> std::ws).peek() == ']') {
 			is.ignore();
-			JSONArray arr;
-			arr.reserve(items.size());
 			return JSONArray{std::make_move_iterator(std::begin(items)), std::make_move_iterator(std::end(items))};
 		}
 		if (is.peek() != ',') throw JSONException(std::string("Expected \',\', got: \'") + std::string{(char) is.peek(), '\''});
