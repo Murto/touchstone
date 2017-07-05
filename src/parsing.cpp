@@ -103,12 +103,13 @@ JSONString parseJSONString(std::istream& is) {
 	if (is.peek() != '\"') throw JSONException{std::string{"Expected \'\"\', got: \'"} + std::string{(char) is.peek(), '\''}};
 	is.ignore();
 	std::string str;
-	std::istream_iterator<char> it{is};
+	char c;
 	do {
-		if (*it == '\"') return str;
-		str += *it;
-		if (*it == '\\') str += *++it;
-	} while (++it != std::istream_iterator<char>());
+		c = is.get();
+		if (c == '\"') return str;
+		str += c;
+		if (c == '\\') str += is.get();
+	} while (is.good());
 	throw JSONException{"Unexpected end of input."};
 }
 
