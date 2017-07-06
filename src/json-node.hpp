@@ -36,12 +36,13 @@ public:
 	JSONNode& operator=(JSONString&&);
 	JSONNode& operator=(const JSONNumber&);
 	JSONNode& operator=(const JSONBool&);
-	bool isObject();
-	bool isArray();
-	bool isString();
-	bool isNumber();
-	bool isBool();
-	bool isNull();
+	bool isObject() const noexcept;
+	bool isArray() const noexcept;
+	bool isString() const noexcept;
+	bool isNumber() const noexcept;
+	bool isBool() const noexcept;
+	bool isNull() const noexcept;
+	void nullify() noexcept;
 	JSONObject& getObject();
 	JSONArray& getArray();
 	JSONString& getString();
@@ -49,7 +50,6 @@ public:
 	JSONBool& getBool();
 	JSONNode& getNode(const JSONObject::key_type&);
 	JSONNode& getNode(const JSONArray::size_type&);
-	void nullify();
 	std::string toString() const;
 	friend std::ostream& operator<<(std::ostream&, const JSONNode&);
 private:

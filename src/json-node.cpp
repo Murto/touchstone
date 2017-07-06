@@ -250,28 +250,32 @@ std::ostream& operator<<(std::ostream& os, const JSONNode& node) {
 	}
 }
 
-bool JSONNode::isObject() {
+bool JSONNode::isObject() const noexcept {
 	return type == JSONType::OBJECT;
 }
 
-bool JSONNode::isArray() {
+bool JSONNode::isArray() const noexcept {
 	return type == JSONType::ARRAY;
 }
 
-bool JSONNode::isString() {
+bool JSONNode::isString() const noexcept {
 	return type == JSONType::STRING;
 }
 
-bool JSONNode::isNumber() {
+bool JSONNode::isNumber() const noexcept {
 	return type == JSONType::NUMBER;
 }
 
-bool JSONNode::isBool() {
+bool JSONNode::isBool() const noexcept {
 	return type == JSONType::BOOL;
 }
 
-bool JSONNode::isNull() {
+bool JSONNode::isNull() const noexcept {
 	return type == JSONType::NONE;
+}
+
+void JSONNode::nullify() noexcept {
+	type = JSONType::NONE;
 }
 
 JSONObject& JSONNode::getObject() {
@@ -307,10 +311,6 @@ JSONNode& JSONNode::getNode(const JSONObject::key_type& key) {
 JSONNode& JSONNode::getNode(const JSONArray::size_type& pos) {
 	if (type == JSONType::ARRAY) return value.arr.at(pos);
 	throw JSONException{"Invalid operation."};
-}
-
-void JSONNode::nullify() {
-	type = JSONType::NONE;
 }
 
 std::string JSONNode::toString() const {
