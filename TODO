@@ -1,4 +1,5 @@
 TODOs:
+	Use memory mapped approach to parsing.
 	Add tree-search
 	Write documentation & commentary
 	Add randomised json test
