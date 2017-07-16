@@ -16,7 +16,7 @@ mkbin:
 large: mkbin
 	@echo -e "Compiling large json benchmark..."
 	@if command -v  $(CC) &> /dev/null;\
-	then if $(CC) $(CFLAGS) $(BENCHMARKS)/large.cpp $(TOUCHSTONE)/*.cpp -o bin/large.out &> /dev/null;\
+	then if $(CC) $(CFLAGS) $(BENCHMARKS)/large.cc $(TOUCHSTONE)/*.cc -o bin/large.out &> /dev/null;\
 		then echo -e "\e[32mSuccess.\e[0m";\
 		else echo -e "\e[91mFailure.\e[0m";\
 		fi;\
