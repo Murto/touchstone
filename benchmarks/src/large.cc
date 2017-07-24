@@ -1,3 +1,4 @@
+#include "file_map.hh"
 #include "json_node.hh"
 #include "parsing.hh"
 
@@ -9,9 +10,10 @@ void print_time_elapsed(const std::chrono::time_point<std::chrono::steady_clock>
 
 int main() {
 	using namespace touchstone;
-	std::ifstream ifs("benchmarks/json/large.json");
+//	std::ifstream ifs("benchmarks/json/large.json");
+	file_map mapping("benchmarks/json/large.json");
 	auto start = std::chrono::steady_clock::now();
-	json_node node = parse_json(ifs);
+	json_node node = parse(mapping.cbegin(), mapping.cend());
 	auto end = std::chrono::steady_clock::now();
 	std::cout << "Time elapsed for file parse:\n";
 	print_time_elapsed(start, end);
