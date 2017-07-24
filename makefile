@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++11 -Os -I src
+CFLAGS = -std=c++11 -Os -I src -I benchmarks/src
 TOUCHSTONE = src
 BENCHMARKS = benchmarks/src
 
@@ -16,7 +16,7 @@ mkbin:
 large: mkbin
 	@echo -e "Compiling large json benchmark..."
 	@if command -v  $(CC) &> /dev/null;\
-	then if $(CC) $(CFLAGS) $(BENCHMARKS)/large.cc $(TOUCHSTONE)/*.cc -o bin/large.out &> /dev/null;\
+	then if $(CC) $(CFLAGS) $(BENCHMARKS)/large.cc $(BENCHMARKS)/file_map.cc $(TOUCHSTONE)/*.cc -o bin/large.out &> /dev/null;\
 		then echo -e "\e[32mSuccess.\e[0m";\
 		else echo -e "\e[91mFailure.\e[0m";\
 		fi;\
