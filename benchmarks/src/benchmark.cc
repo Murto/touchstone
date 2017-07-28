@@ -8,9 +8,9 @@
 
 void print_time_elapsed(const std::chrono::time_point<std::chrono::steady_clock>& start, const std::chrono::time_point<std::chrono::steady_clock>& end);
 
-int main() {
+int main(int argc, char* argv[]) {
 	using namespace touchstone;
-	file_map mapping("benchmarks/json/large.json");
+	file_map mapping(argv[1]);
 	auto start = std::chrono::steady_clock::now();
 	json_node node = parse(mapping.cbegin(), mapping.cend());
 	auto end = std::chrono::steady_clock::now();
