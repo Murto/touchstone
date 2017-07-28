@@ -264,7 +264,7 @@ void parse_null(input_it_t&& start, const typename std::remove_reference<input_i
 		char null_str[4] = {};
 		std::copy(start, start + 4, std::begin(null_str));
 		start += 4;
-		if (*(int32_t*)(null_str + 0) == 0x6E756C6C)
+		if (*(int32_t*)(null_str + 0) == 0x6C6C756E)
 			return;
 	}
 
