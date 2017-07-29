@@ -105,7 +105,7 @@ json_object parse_object(input_it_t&& start, const typename std::remove_referenc
 }
 
 template<typename input_it_t>
-json_member parse_member(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
+inline json_member parse_member(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
 	json_string key{parse_string(start, end)};
 	skip_whitespace(start, end);
 	if (*start != ':')
@@ -144,6 +144,16 @@ json_array parse_array(input_it_t&& start, const typename std::remove_reference<
 	throw std::runtime_error{"Unexpected end of string."};
 }
 
+template<typename input_it_t>
+inline void parse_unicode_sequence(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end, std::string& out) {
+	for (int i = 0; i < 4; ++i) {
+		if (!isxdigit(*start))
+			throw std::runtime_error{std::string("Expected hexadecimal, got '") + *start += '\''};
+
+		out += *start;
+		++start;
+	}
+}
 
 template<typename input_it_t>
 json_string parse_string(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
@@ -159,8 +169,11 @@ json_string parse_string(input_it_t&& start, const typename std::remove_referenc
 		}
 
 		str += *start;
-		if (*start == '\\')
-			str += *++start;
+		if (*start == '\\' && ++start != end) {
+			str += *start;
+			if (*start == 'u' && std::distance(start, end) > 4)
+				parse_unicode_sequence(++start, end, str);
+		}
 	}
 
 	throw std::runtime_error{"Unexpected end of string."};
