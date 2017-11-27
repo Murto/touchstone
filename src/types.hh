@@ -1,5 +1,4 @@
-#ifndef TOUCHSTONE_TYPES_HH
-#define TOUCHSTONE_TYPES_HH
+#pragma once
 
 #include <map>
 #include <string>
@@ -26,5 +25,3 @@ enum class json_type {
 };
 
 }
-
-#endif

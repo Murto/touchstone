@@ -1,5 +1,4 @@
-#ifndef TOUCHSTONE_PARSING_HH
-#define TOUCHSTONE_PARSING_HH
+#pragma once
 
 #include "json_node.hh"
 #include "types.hh"
@@ -285,5 +284,3 @@ void parse_null(input_it_t&& start, const typename std::remove_reference<input_i
 }
 
 }
-
-#endif

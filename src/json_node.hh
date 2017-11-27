@@ -2,9 +2,6 @@
 // mainstream on gentoo the data union
 // will be replaced with std::variant
 
-#ifndef JSON_NODE_HH
-#define JSON_NODE_HH
-
 #include "types.hh"
 
 #include <ostream>
@@ -72,5 +69,3 @@ private:
 };
 
 }
-
-#endif
