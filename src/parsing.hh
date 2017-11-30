@@ -1,7 +1,6 @@
 #pragma once
 
 #include "json_node.hh"
-#include "types.hh"
 
 #include <algorithm>
 #include <cctype>
@@ -15,44 +14,44 @@
 
 namespace touchstone {
 
-template<typename input_it_t>
-json_node parse(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end);
-template<typename input_it_t>
-json_object parse_object(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end);
-template<typename input_it_t>
-json_member parse_member(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end);
-template<typename input_it_t>
-json_array parse_array(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end);
-template<typename input_it_t>
-json_string parse_string(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end);
-template<typename input_it_t>
-json_number parse_number(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end);
-template<typename input_it_t>
-json_bool parse_bool(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end);
-template<typename input_it_t>
-void parse_null(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end);
+template<typename t_input_it>
+json_node parse(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end);
+template<typename t_input_it>
+json_node::object_type parse_object(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end);
+template<typename t_input_it>
+json_node::object_type::value_type parse_member(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end);
+template<typename t_input_it>
+json_node::array_type parse_array(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end);
+template<typename t_input_it>
+json_node::string_type parse_string(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end);
+template<typename t_input_it>
+json_node::number_type parse_number(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end);
+template<typename t_input_it>
+json_node::bool_type parse_bool(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end);
+template<typename t_input_it>
+void parse_null(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end);
 
 const std::set<char> whitespace{0x20, 0x09, 0x0A, 0x0D};
 
-template<typename input_it_t>
-inline bool skip_whitespace(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	while (start != end && whitespace.find(*start) != whitespace.end())
-		++start;
+template<typename t_input_it>
+inline bool skip_whitespace(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end) {
+	while (p_start != p_end && whitespace.find(*p_start) != whitespace.end())
+		++p_start;
 
-	if (start == end)
+	if (p_start == p_end)
 		throw std::runtime_error{"Unexpected end of string."};
 }
 
-template<typename input_it_t>
-json_node parse(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	skip_whitespace(start, end);	
-	switch (*start) {
+template<typename t_input_it>
+json_node parse(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end) {
+	skip_whitespace(p_start, p_end);
+	switch (*p_start) {
 		case '{':
-			return json_node(parse_object(start, end));
+			return json_node(parse_object(p_start, p_end));
 		case '[':
-			return json_node(parse_array(start, end));
+			return json_node(parse_array(p_start, p_end));
 		case '\"':
-			return json_node(parse_string(start, end));
+			return json_node(parse_string(p_start, p_end));
 		case '-':
 		case '1':
 		case '2':
@@ -64,114 +63,114 @@ json_node parse(input_it_t&& start, const typename std::remove_reference<input_i
 		case '8':
 		case '9':
 		case '0':
-			return json_node(parse_number(start, end));
+			return json_node(parse_number(p_start, p_end));
 		case 't':
 		case 'f':
-			return json_node(parse_bool(start, end));
+			return json_node(parse_bool(p_start, p_end));
 		case 'n':
-			parse_null(start, end);
+			parse_null(p_start, p_end);
 			return json_node();
 	}
 
-	throw std::runtime_error(std::string("Expected JSON value token, got '") + *start += '\'');
+	throw std::runtime_error(std::string("Expected JSON value token, got '") + *p_start += '\'');
 }
 
-template<typename input_it_t>
-json_object parse_object(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	skip_whitespace(start, end);
-	if (*start != '{')
-		throw std::runtime_error{std::string("Expected '{', got '") + *start += '\''};
+template<typename t_input_it>
+json_node::object_type parse_object(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end) {
+	skip_whitespace(p_start, p_end);
+	if (*p_start != '{')
+		throw std::runtime_error{std::string("Expected '{', got '") + *p_start += '\''};
 	
-	json_object obj;
-	skip_whitespace(start, end);
-	if (*start == '}') {
-		++start;
+	json_node::object_type obj;
+	skip_whitespace(p_start, p_end);
+	if (*p_start == '}') {
+		++p_start;
 		return obj;
 	}
 
-	while (++start != end) {
-		obj.emplace(parse_member(start, end));
-		skip_whitespace(start, end);
-		if (*start == '}') {
-			++start;
+	while (++p_start != p_end) {
+		obj.emplace(parse_member(p_start, p_end));
+		skip_whitespace(p_start, p_end);
+		if (*p_start == '}') {
+			++p_start;
 			return obj;
-		} else if (*start != ',') {
-			throw std::runtime_error{std::string("Expected ',', got '") + *start += '\''};
+		} else if (*p_start != ',') {
+			throw std::runtime_error{std::string("Expected ',', got '") + *p_start += '\''};
 		}
 	}
 
 	throw std::runtime_error{"Unexpected end of string."};
 }
 
-template<typename input_it_t>
-inline json_member parse_member(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	json_string key{parse_string(start, end)};
-	skip_whitespace(start, end);
-	if (*start != ':')
-		throw std::runtime_error{std::string("Expected ':', got '") + *start += '\''};
+template<typename t_input_it>
+inline json_node::object_type::value_type parse_member(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end) {
+	json_node::string_type key{parse_string(p_start, p_end)};
+	skip_whitespace(p_start, p_end);
+	if (*p_start != ':')
+		throw std::runtime_error{std::string("Expected ':', got '") + *p_start += '\''};
 	
-	if (++start == end)
+	if (++p_start == p_end)
 		throw std::runtime_error{"Unexpected end of string."};
 	
-	return {key, parse(start, end)};
+	return {key, parse(p_start, p_end)};
 }
 
-template<typename input_it_t>
-json_array parse_array(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	skip_whitespace(start, end);
-	if (*start != '[')
-		throw std::runtime_error{std::string("Expected '[', got '") + *start += '\''};
+template<typename t_input_it>
+json_node::array_type parse_array(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end) {
+	skip_whitespace(p_start, p_end);
+	if (*p_start != '[')
+		throw std::runtime_error{std::string("Expected '[', got '") + *p_start += '\''};
 	
 	std::list<json_node> values;
-	skip_whitespace(start, end);
-	if (*start == ']') {
-		++start;
+	skip_whitespace(p_start, p_end);
+	if (*p_start == ']') {
+		++p_start;
 		return {std::make_move_iterator(values.begin()), std::make_move_iterator(values.end())};
 	}
 
-	while (++start != end) {
-		values.emplace_back(parse(start, end));
-		skip_whitespace(start, end);
-		if (*start == ']') {
-			++start;
+	while (++p_start != p_end) {
+		values.emplace_back(parse(p_start, p_end));
+		skip_whitespace(p_start, p_end);
+		if (*p_start == ']') {
+			++p_start;
 			return {std::make_move_iterator(values.begin()), std::make_move_iterator(values.end())};
-		} else if (*start != ',') {
-			throw std::runtime_error{std::string("Expected ',', got '") + *start += '\''};
+		} else if (*p_start != ',') {
+			throw std::runtime_error{std::string("Expected ',', got '") + *p_start += '\''};
 		}
 	}
 
 	throw std::runtime_error{"Unexpected end of string."};
 }
 
-template<typename input_it_t>
-inline void parse_unicode_sequence(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end, std::string& out) {
+template<typename t_input_it>
+inline void parse_unicode_sequence(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end, std::string& p_out) {
 	for (int i = 0; i < 4; ++i) {
-		if (!isxdigit(*start))
-			throw std::runtime_error{std::string("Expected hexadecimal, got '") + *start += '\''};
+		if (!isxdigit(*p_start))
+			throw std::runtime_error{std::string("Expected hexadecimal, got '") + *p_start += '\''};
 
-		out += *start;
-		++start;
+		p_out += *p_start;
+		++p_start;
 	}
 }
 
-template<typename input_it_t>
-json_string parse_string(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	skip_whitespace(start, end);
-	if (*start != '\"')
-		throw std::runtime_error{std::string("Expected '\"', got '") + *start += '\''};
+template<typename t_input_it>
+json_node::string_type parse_string(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end) {
+	skip_whitespace(p_start, p_end);
+	if (*p_start != '\"')
+		throw std::runtime_error{std::string("Expected '\"', got '") + *p_start += '\''};
 
 	std::string str;
-	while (++start != end) {
-		if (*start == '\"') {
-			++start;
+	while (++p_start != p_end) {
+		if (*p_start == '\"') {
+			++p_start;
 			return str;
 		}
 
-		str += *start;
-		if (*start == '\\' && ++start != end) {
-			str += *start;
-			if (*start == 'u' && std::distance(start, end) > 4)
-				parse_unicode_sequence(++start, end, str);
+		str += *p_start;
+		if (*p_start == '\\' && ++p_start != p_end) {
+			str += *p_start;
+			if (*p_start == 'u' && std::distance(p_start, p_end) > 4)
+				parse_unicode_sequence(++p_start, p_end, str);
 		}
 	}
 
@@ -179,108 +178,108 @@ json_string parse_string(input_it_t&& start, const typename std::remove_referenc
 }
 
 template<typename input_it_t>
-json_number parse_number(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	skip_whitespace(start, end);
+json_node::number_type parse_number(input_it_t&& p_start, const typename std::remove_reference<input_it_t>::type p_end) {
+	skip_whitespace(p_start, p_end);
 	std::string num;
-	if (*start == '-') {
-		num += *start;
-		++start;
+	if (*p_start == '-') {
+		num += *p_start;
+		++p_start;
 	}
 
-	if (start == end)
+	if (p_start == p_end)
 		throw std::runtime_error{"Unexpected end of string."};
 	
-	if (*start == '0') {
-		num += *start;
-		++start;
-	} else if (isdigit(*start)) {
+	if (*p_start == '0') {
+		num += *p_start;
+		++p_start;
+	} else if (isdigit(*p_start)) {
 		do {
-			num += *start;
-			if (++start == end)
+			num += *p_start;
+			if (++p_start == p_end)
 				return std::stod(num);
-		} while (isdigit(*start));
+		} while (isdigit(*p_start));
 	} else {
-		throw std::runtime_error{std::string("Expected digit, got '") + *start += '\''};
+		throw std::runtime_error{std::string("Expected digit, got '") + *p_start += '\''};
 	}
 
-	if (*start == '.') {
-		num += *start;
-		if (++start == end)
+	if (*p_start == '.') {
+		num += *p_start;
+		if (++p_start == p_end)
 			throw std::runtime_error{"Unexpected end of string."};
 
-		if (!isdigit(*start))
-			throw std::runtime_error{std::string("Expected digit, got '") + *start += '\''};
+		if (!isdigit(*p_start))
+			throw std::runtime_error{std::string("Expected digit, got '") + *p_start += '\''};
 
 		do {
-			num += *start;
-			if (++start == end)
+			num += *p_start;
+			if (++p_start == p_end)
 				return std::stod(num);
-		} while (isdigit(*start));
+		} while (isdigit(*p_start));
 	}
 
-	if (*start == 'e' || *start == 'E') {
-		num += *start;
-		if (++start == end)
+	if (*p_start == 'e' || *p_start == 'E') {
+		num += *p_start;
+		if (++p_start == p_end)
 			throw std::runtime_error{"Unexpected end of string."};
 
-		if (*start == '+' || *start == '-') {
-			num += *start;
-			if (++start == end)
+		if (*p_start == '+' || *p_start == '-') {
+			num += *p_start;
+			if (++p_start == p_end)
 				throw std::runtime_error{"Unexpected end of string."};
 		}
 
-		if (!isdigit(*start))
-			throw std::runtime_error{std::string("Expected digit, got '") + *start += '\''};
+		if (!isdigit(*p_start))
+			throw std::runtime_error{std::string("Expected digit, got '") + *p_start += '\''};
 
 		do {
-			num += *start;
-		} while (++start != end && isdigit(*start));
+			num += *p_start;
+		} while (++p_start != p_end && isdigit(*p_start));
 	}
 	return std::stod(num);
 }
 
-template<typename input_it_t>
-json_bool parse_bool(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	skip_whitespace(start, end);
-	if (*start == 't') {
-		if (std::distance(start, end) < 4)
+template<typename t_input_it>
+json_node::bool_type parse_bool(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end) {
+	skip_whitespace(p_start, p_end);
+	if (*p_start == 't') {
+		if (std::distance(p_start, p_end) < 4)
 			throw std::runtime_error{"Unexpected end of string."};
 
 		char bool_str[4] = {};
-		std::copy(start, start + 4, std::begin(bool_str));
-		start += 4;
+		std::copy(p_start, p_start + 4, std::begin(bool_str));
+		p_start += 4;
 		if (*(int32_t*)(bool_str + 0) == 0x65757274)
 			return true;
-	} else if (std::distance(start, end) >= 5 && *start == 'f') {
-		if (std::distance(start, end) < 5)
+	} else if (std::distance(p_start, p_end) >= 5 && *p_start == 'f') {
+		if (std::distance(p_start, p_end) < 5)
 			throw std::runtime_error{"Unexpected end of string."};
 
 		char bool_str[4] = {};
-		++start;
-		std::copy(start, start + 4, std::begin(bool_str));
-		start += 4;
+		++p_start;
+		std::copy(p_start, p_start + 4, std::begin(bool_str));
+		p_start += 4;
 		if (*(int32_t*)(bool_str + 0) == 0x65736C61)
 			return false;
 	}
 
-	throw std::runtime_error{std::string("Expected 't' or 'f', got '") + *start += '\''};
+	throw std::runtime_error{std::string("Expected 't' or 'f', got '") + *p_start += '\''};
 }
 
-template<typename input_it_t>
-void parse_null(input_it_t&& start, const typename std::remove_reference<input_it_t>::type end) {
-	skip_whitespace(start, end);
-	if (*start == 'n') {
-		if (std::distance(start, end) < 4)
+template<typename t_input_it>
+void parse_null(t_input_it&& p_start, const typename std::remove_reference<t_input_it>::type p_end) {
+	skip_whitespace(p_start, p_end);
+	if (*p_start == 'n') {
+		if (std::distance(p_start, p_end) < 4)
 			throw std::runtime_error("Unexpected end of string.");
 
 		char null_str[4] = {};
-		std::copy(start, start + 4, std::begin(null_str));
-		start += 4;
+		std::copy(p_start, p_start + 4, std::begin(null_str));
+		p_start += 4;
 		if (*(int32_t*)(null_str + 0) == 0x6C6C756E)
 			return;
 	}
 
-	throw std::runtime_error{std::string("Expected 'n', got '") + *start += '\''};
+	throw std::runtime_error{std::string("Expected 'n', got '") + *p_start += '\''};
 }
 
 }
