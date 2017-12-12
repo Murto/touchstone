@@ -60,7 +60,7 @@ public:
 	bool is_number() const noexcept;
 	bool is_bool() const noexcept;
 	bool is_null() const noexcept;
-	void nullify() noexcept;
+	void nullify() noexcept [[noreturn]];
 	object_type& get_object();
 	array_type& get_array();
 	string_type& get_string();

@@ -273,7 +273,7 @@ bool json_node::is_null() const noexcept {
 	return m_type == json_type::NONE;
 }
 
-void json_node::nullify() noexcept {
+void json_node::nullify() noexcept [[noreturn]] {
 	m_type = json_type::NONE;
 }
 
